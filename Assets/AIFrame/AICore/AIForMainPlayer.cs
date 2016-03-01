@@ -4,7 +4,7 @@ using System.Collections;
 /// <summary>
 /// 由玩家自己控制的AI
 /// </summary>
-public class AIForMainPlayer :AIBase {
+public class AIForMainPlayer :AIUnit {
 
     public override void OnUpdate()
     {

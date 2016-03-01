@@ -4,7 +4,23 @@ using System.Collections.Generic;
 
 public class AIDataSet
 {
-    public  List<AIClipGroup> aiGroups=new List<AIClipGroup>();
+    public List<AIDataUnit> aiDataList=new List<AIDataUnit>();
+}
+
+
+/// <summary>
+/// 单个英雄的AI数据，一个英雄可以在AI组库里选择一个作为当前AI组， 
+/// 比如主控组切换到跟随组等等
+/// </summary>
+public class AIDataUnit
+{
+    public string NameOnUI
+    {
+        get { return Id + AiName; }
+    }
+    public int Id; //AI数据的唯一标识
+    public string AiName="undefined";
+    public List<AIClipGroup> aiGroups = new List<AIClipGroup>();
 }
 
 /// <summary>
@@ -44,5 +60,9 @@ public class AIShape
 
     public float colliderHeight=1.8f;
     public float colliderRadius=0.5f;
-    
+
+    public float hitDetectHeight;
+    public float hitDetectScale;
+    public float hitRadius;
+
 }

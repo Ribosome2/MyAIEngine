@@ -10,31 +10,25 @@ public class AIClip
     /// <summary>
     /// 当前片断可能切换到的片断列表
     /// </summary>
-    public List<AILinkClip> linkAIClipList = new List<AILinkClip>();
+    public List<AILink> linkAIClipList = new List<AILink>();
     /// <summary>
     /// 这个片断应该播放的动画名称
     /// </summary>
     public string animationName="";
 
     public float attackRange;
+    /// <summary>
+    /// 这个片断会触发的事件列表
+    /// </summary>
+    public List<AIClipEvent> mListEvents = new List<AIClipEvent>();
 
 }
 
 
-public class AILinkClip
+public class AILink
 {
-    public AILinkClip()
-    {
-        
-    }
-    //!!!!!!!!!!!!!! 注意，用XML序列化的时候如果定义了这个带参数的构造函数，没有无参数的构造函数就会保存
-    //导致构造序列化失败
-    public AILinkClip(AIClip clip)
-    {
-        linkToClip = clip;
-    }
     public List<AILinkCondiction> linkConditionList = new List<AILinkCondiction>();
-    public AIClip linkToClip = new AIClip();
+    public string linkToClip = "";
     public bool checkAllCondition;
 }
 

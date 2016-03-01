@@ -55,13 +55,17 @@ public class AIFUIUtility {
         shape.scaleRatio = EditorGUILayout.FloatField("缩放比例:" , shape.scaleRatio,GUILayout.Width(300));
         shape.colliderHeight = EditorGUILayout.FloatField("碰撞高度:", shape.colliderHeight, GUILayout.Width(300));
         shape.colliderRadius = EditorGUILayout.FloatField("碰撞半径:", shape.colliderRadius, GUILayout.Width(300));
+        EditorGUILayout.Separator();
+        shape.hitDetectScale = EditorGUILayout.FloatField("攻击框比例:", shape.scaleRatio, GUILayout.Width(300));
+        shape.hitDetectHeight = EditorGUILayout.FloatField("攻击框高度:", shape.colliderHeight, GUILayout.Width(300));
+        shape.hitRadius = EditorGUILayout.FloatField("攻击框半径:", shape.colliderRadius, GUILayout.Width(300));
     }
 
 
     #region DrawLinkCondition
-    public static void DrawAiLinkConditions(AILinkClip linkClip)
+    public static void DrawAiLinkConditions(AILink link)
     {
-        List<AILinkCondiction> conditionList = linkClip.linkConditionList;
+        List<AILinkCondiction> conditionList = link.linkConditionList;
         GUILayout.Label("连接条件:", GUILayout.Width(200));
         if (GUILayout.Button("添加条件", GUILayout.Width(80)))
         {
@@ -78,10 +82,11 @@ public class AIFUIUtility {
         }
         else
         {
-            linkClip.checkAllCondition = GUILayout.Toggle(linkClip.checkAllCondition, "检查全部条件", GUILayout.Width(100));
+            link.checkAllCondition = GUILayout.Toggle(link.checkAllCondition, "检查全部条件", GUILayout.Width(100));
             foreach (AILinkCondiction condition in conditionList)
             {
-                GUILayout.Label("__________________");
+               
+               // GUILayout.Label("__________________");
                 if (condition is AiInputCondiction) //这个基类怎么转成子类？
                 {
                     DrawLinkConditon(condition as AiInputCondiction);
@@ -98,7 +103,7 @@ public class AIFUIUtility {
                 {
                     Debug.LogError("未实现的变量类型" + condition);
                 }
-
+                EditorGUILayout.Separator();
 
             }
         }
