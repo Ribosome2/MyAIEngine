@@ -19,8 +19,17 @@ public class AILinkEditWnd :EditorWindow
 
     void OnGUI()
     {
-        
+        if (aiLink!=null)
+        {
+            aiLink.checkAllCondition = GUILayout.Toggle(aiLink.checkAllCondition,"检查所有条件");
+            aiLink.linkToClip = AIFUIUtility.DrawTextField(aiLink.linkToClip, "目标片断");
+            AIFUIUtility.DrawAiLinkConditions(aiLink);
+
+        }
+
+        GUILayout.Button("确定");
     }
 
+    
 
 }
