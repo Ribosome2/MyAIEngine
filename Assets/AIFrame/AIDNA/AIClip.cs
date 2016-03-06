@@ -6,7 +6,12 @@ using System.Collections.Generic;
 /// </summary>
 public class AIClip
 {
-    public string name = "empty";
+    public string NameOnUI
+    {
+        get { return string.Format(string.Format("{0}/{1}", animationName, name)); }
+    }
+
+    public string name = "";
     /// <summary>
     /// 当前片断可能切换到的片断列表
     /// </summary>

@@ -44,6 +44,20 @@ public class AIClipGroup
     public string name="";
     public AIShape shape=new AIShape();
     public List<AIClip> aiClipList = new List<AIClip>();
+    public AICommonAnimation commonAnimation = new AICommonAnimation();
+
+}
+
+/// <summary>
+/// 用作当前AI组公用动画片断名
+/// </summary>
+public class AICommonAnimation
+{
+    public string idle="";
+    public string walk="";
+    public string run="";
+    public string hit="";
+    public string die="";
 
 }
 
@@ -60,6 +74,8 @@ public class AIShape
 
     public float colliderHeight=1.8f;
     public float colliderRadius=0.5f;
+    public Vector3 colliderOffset=Vector3.zero;
+
 
     public float hitDetectHeight;
     public float hitDetectScale;

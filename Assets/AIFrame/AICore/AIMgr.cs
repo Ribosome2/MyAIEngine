@@ -6,7 +6,7 @@ public class AIMgr :Singleton<AIMgr>
 {
     public List<AIBase> listAIs = new List<AIBase>();
 
-    public void CreateAI(string resName)
+    public void CreateAI(string resName,int dataId)
     {
         Object obj = Resources.Load(resName);
         if (obj != null)
@@ -14,6 +14,7 @@ public class AIMgr :Singleton<AIMgr>
             GameObject aiModel = Object.Instantiate(obj) as GameObject;
             AIForMainPlayer ai = new AIForMainPlayer();
             ai.SetModel(aiModel);
+            ai.SetAIDataUnit(AIDataMgr.instance.GetAIUnitData(dataId));
             listAIs.Add(ai);
         }
         else
@@ -51,7 +52,19 @@ public class AIMgr :Singleton<AIMgr>
         return null;
     }
 
-    
+
+    /// <summary>
+    /// 销毁所有AI
+    /// </summary>
+    public void DestroyAllAIs()
+    {
+        while (listAIs.Count > 0)
+        {
+            AIBase ai = listAIs[0];
+            ai.Destroy();
+            listAIs.Remove(ai);
+        }
+    }
 
 
     

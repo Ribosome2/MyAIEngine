@@ -144,7 +144,11 @@ public class AIDataEditor : EditorWindow {
             if (GUILayout.Button("Add", GUILayout.Width(45)))
             {
                 AIClip aiClip = new AIClip();
-                clipGroup.aiClipList.Add(aiClip);
+                AIClipEditWnd wnd = EditorWindow.GetWindow<AIClipEditWnd>();
+                wnd.SetData(AIClipEditWnd.EditMode.Create, clipGroup,aiClip, delegate
+                {
+                    clipGroup.aiClipList.Add(aiClip);
+                });
             }
             if (GUILayout.Button("X", GUILayout.Width(45)))
             {
@@ -177,7 +181,7 @@ public class AIDataEditor : EditorWindow {
                         AIClip clip = clipGroup.aiClipList[i];
                         GUILayout.BeginHorizontal();
                         GUILayout.Space(indentSpace);
-                        if (AIFUIUtility.LayoutButtonWithColor(clip.name,
+                        if (AIFUIUtility.LayoutButtonWithColor(clip.NameOnUI,
                             curSelection.selectedAiClip == clip ? Color.green : GUI.color, 150))
                         {
                             curSelection.SelectAIDataUnit(groupUnit);
@@ -270,6 +274,7 @@ public class AIDataEditor : EditorWindow {
             {
                 curSelection.selecteClipGroup.name = AIFUIUtility.DrawTextField(curSelection.selecteClipGroup.name,"Ai组名称");
                 AIFUIUtility.DrawAIShape(curSelection.selecteClipGroup.shape);
+                AIFUIUtility.DrawCommanAnimation(curSelection.selecteClipGroup.commonAnimation);
             }
             else if (curSelection.selectedUnit != null)
             {
@@ -429,6 +434,33 @@ public class AIDataEditor : EditorWindow {
         });
         return src == null;
     }
+
+    /// <summary>
+    /// 检查是否可以创建这个新的数据（ID 是否相同等等）
+    /// </summary>
+    /// <param name="dataToCreate"></param>
+    /// <returns></returns>
+    public static bool CheckCreateNew(AIClipGroup clipGroup,AIClip clip)
+    {
+        if (string.IsNullOrEmpty(clip.animationName))
+        {
+            EditorUtility.DisplayDialog("提示", "片断名不能为空", "好吧V_V");
+            return false;
+        }
+
+        AIClip srcClip= clipGroup.aiClipList.Find(delegate(AIClip targetClip)
+        {
+            return targetClip.animationName == clip.animationName;
+        });
+
+        if (srcClip != null)
+        {
+            EditorUtility.DisplayDialog("提示", "动画片断名和已有的重复！", "确定");
+            return false;
+        }
+        return true;
+    }
+
 }
 
 public class UIAIDataUnit
@@ -522,7 +554,7 @@ public class AIDataSelection
         {
             selectedAiClip = aiClip;
             //要保证选择AI片断后自动选择这个片断所在的AI组
-          
+            selecteClipGroup = FindOwnerClipGroup(aiClip);
             mSelectedLink = null;
         }
     }
@@ -547,5 +579,26 @@ public class AIDataSelection
         return mSelectedLink != null && mSelectedLink == clip;
     }
 
-    
+    /// <summary>
+    /// 寻找制定AI片断归属的AI组
+    /// </summary>
+    /// <param name="clip"></param>
+    /// <returns></returns>
+    public AIClipGroup FindOwnerClipGroup(AIClip clip)
+    {
+        for (int i = 0; i < AIDataEditor.aiDataSet.aiDataList.Count; i++)
+        {
+            AIDataUnit aiUnit = AIDataEditor.aiDataSet.aiDataList[i];
+            AIClipGroup clipGroup = aiUnit.aiGroups.Find(delegate(AIClipGroup Group)
+            {
+                return Group.aiClipList.Contains(clip);
+            });
+            if (clipGroup != null)
+            {
+                return clipGroup;
+            }
+        }
+        Debug.LogError(string.Format("片断{0}没有找到归属组", clip));
+        return null;
+    }
 }

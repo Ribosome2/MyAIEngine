@@ -22,7 +22,7 @@ public class AILinkEditWnd :EditorWindow
         if (aiLink!=null)
         {
             aiLink.checkAllCondition = GUILayout.Toggle(aiLink.checkAllCondition,"检查所有条件");
-            aiLink.linkToClip = AIFUIUtility.DrawTextField(aiLink.linkToClip, "目标片断");
+            AIFUIUtility.DrawAiLinkPopup(srcGroup, aiLink);
             AIFUIUtility.DrawAiLinkConditions(aiLink);
 
         }

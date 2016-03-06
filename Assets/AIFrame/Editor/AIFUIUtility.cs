@@ -27,6 +27,30 @@ public class AIFUIUtility {
         return content;
     }
 
+    
+    public static void  DrawAiLinkPopup(AIClipGroup clipGroup, AILink link)
+    {
+        if (clipGroup == null)
+        {
+            GUILayout.Label("Ai组为空");
+            return;
+        }
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("连接动画名", GUILayout.Width(70));
+        string[] optionClips =new string[clipGroup.aiClipList.Count];
+        for (int i = 0; i < optionClips.Length; i++)
+        {
+            optionClips[i] = clipGroup.aiClipList[i].animationName;
+        }
+        int curSelectIndex = clipGroup.aiClipList.FindIndex(delegate(AIClip targetClip)
+        {
+            return targetClip.animationName == link.linkToClip;
+        });
+        if (curSelectIndex < 0)
+            curSelectIndex = 0;
+       link.linkToClip=optionClips[EditorGUILayout.Popup(curSelectIndex, optionClips)];
+        GUILayout.EndHorizontal();
+    }
     /// <summary>
     /// 用制定颜色画按钮， 画完回复原来的颜色
     /// </summary>
@@ -55,10 +79,31 @@ public class AIFUIUtility {
         shape.scaleRatio = EditorGUILayout.FloatField("缩放比例:" , shape.scaleRatio,GUILayout.Width(300));
         shape.colliderHeight = EditorGUILayout.FloatField("碰撞高度:", shape.colliderHeight, GUILayout.Width(300));
         shape.colliderRadius = EditorGUILayout.FloatField("碰撞半径:", shape.colliderRadius, GUILayout.Width(300));
+        AIFUIUtility.DrawVector3("碰撞偏移", ref shape.colliderOffset);
         EditorGUILayout.Separator();
         shape.hitDetectScale = EditorGUILayout.FloatField("攻击框比例:", shape.scaleRatio, GUILayout.Width(300));
         shape.hitDetectHeight = EditorGUILayout.FloatField("攻击框高度:", shape.colliderHeight, GUILayout.Width(300));
         shape.hitRadius = EditorGUILayout.FloatField("攻击框半径:", shape.colliderRadius, GUILayout.Width(300));
+    }
+
+    public static  void DrawVector3(string name,ref Vector3 v3)
+    {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(name, GUILayout.Width(80));
+        v3 = EditorGUILayout.Vector3Field("", v3,GUILayout.Width(200));
+        GUILayout.EndHorizontal();
+    }
+
+
+    public static void DrawCommanAnimation(AICommonAnimation  comAnim)
+    {
+        GUILayout.Label("AI通用片断");
+        comAnim.die = AIFUIUtility.DrawTextField(comAnim.die, "死亡倒地", 100);
+        comAnim.hit = AIFUIUtility.DrawTextField(comAnim.hit, "被击中", 100);
+        comAnim.idle = AIFUIUtility.DrawTextField(comAnim.idle, "待机", 100);
+        comAnim.run = AIFUIUtility.DrawTextField(comAnim.run, "奔跑", 100);
+        comAnim.walk = AIFUIUtility.DrawTextField(comAnim.walk, "走路", 100);
+
     }
 
 

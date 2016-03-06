@@ -6,10 +6,24 @@ using System.Collections;
 /// </summary>
 public class AIUnit : AIBase
 {
+    public static bool UseMecanimAnimation = true; //设置是用Mecanim 动画系统还是旧的动画系统
     private Animation mAnimation;
     private AIClip mCurAIClip; //当前所在的AI片断
-
+    private AIDataUnit mDataUnit;
     private AIClipGroup mAiClipGroup;
+
+    private Animator mAnimator;
+    public Animator animator
+    {
+        get
+        {
+            if (mAnimator == null)
+            {
+                mAnimator = gameObject.GetComponent<Animator>();
+            }
+            return mAnimator;
+        }
+    }
 
     public AIClipGroup AiGroupData
     {
@@ -20,15 +34,57 @@ public class AIUnit : AIBase
     {
         base.SetModel(obj);
         mAnimation = mGameObj.GetComponent<Animation>();
+        UpdateShape();
+    }
+
+    public void UpdateShape()
+    {
+        if (Controller && mAiClipGroup!=null)
+        {
+            AIShape shape = mAiClipGroup.shape;
+            Controller.center = shape.colliderOffset;
+            Controller.height = shape.colliderHeight;
+            Controller.radius = shape.colliderRadius;
+        }
+    }
+
+
+    public virtual void SetAIDataUnit(AIDataUnit aiData)
+    {
+        mDataUnit = aiData;
+        SetAIClipGroup(mDataUnit.aiGroups[0]);
     }
     /// <summary>
     /// 设置AI组数据
     /// </summary>
-    public virtual void SetAIClipData(AIClipGroup groupData)
+    public virtual void SetAIClipGroup(AIClipGroup groupData)
     {
         mAiClipGroup = groupData;
         mCurAIClip = mAiClipGroup.aiClipList[0];
+        UpdateShape();
     }
+
+    public virtual void SwitchAIClip(AIClip aiClip)
+    {
+
+        if (aiClip == null)
+        {
+            Debug.LogError("不能设置空数据");
+            return;
+        }
+        mCurAIClip = aiClip;
+    }
+
+    public virtual void SwitchAIClipByName(string  clipName)
+    {
+        AIClip clip = mAiClipGroup.aiClipList.Find(delegate(AIClip targetClip)
+        {
+            return targetClip.animationName == clipName;
+        });
+        SwitchAIClip(clip);
+
+    }
+
 
     public override void Move(Vector3 deltaPos)
     {
@@ -42,14 +98,19 @@ public class AIUnit : AIBase
     /// <param name="deltaMove"></param>
     public virtual void ChooseMovementAnimation(Vector3 deltaMove)
     {
-        if (deltaMove.x == 0 || deltaMove.z == 0)
+        if (AiGroupData != null)
         {
-            PlayAnimation("idle", 0.3f);
+            if (deltaMove.x == 0 &&  deltaMove.z == 0)
+            {
+                PlayAnimation(AiGroupData.commonAnimation.idle, 0.1f);
+            }
+            else
+            {
+                PlayAnimation(AiGroupData.commonAnimation.run, 0.1f);
+                FaceToDirection(deltaMove);
+            }
         }
-        else
-        {
-            PlayAnimation("run", 0.3f);
-        }
+      
     }
 
     /// <summary>
@@ -59,8 +120,21 @@ public class AIUnit : AIBase
     /// <param name="fadeTime">过度时间</param>
     public virtual void PlayAnimation(string clipName, float fadeTime)
     {
-        mAnimation.CrossFade(clipName, fadeTime);
+        if (UseMecanimAnimation)
+        {
+            animator.Play(clipName);
+            //animator.CrossFade(clipName, fadeTime);
+        }
+        else
+        {
+            mAnimation.CrossFade(clipName, fadeTime);
+        }
     }
 
+    public void FaceToDirection(Vector3 dir)
+    {
+        Vector3 dirWitoutY = new Vector3(dir.x, 0, dir.z).normalized;
 
+        transform.rotation =Quaternion.LookRotation(dirWitoutY);
+    }
 }

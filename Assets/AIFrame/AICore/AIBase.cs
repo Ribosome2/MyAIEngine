@@ -31,6 +31,11 @@ public class AIBase
         get { return mGameObj == null ? Vector3.zero : mGameObj.transform.position; }
     }
 
+    public CharacterController Controller
+    {
+        get { return mController; }
+    }
+
     public virtual void OnUpdate()
     {
         
@@ -74,7 +79,10 @@ public class AIBase
 
     public virtual void Destroy()
     {
-        
+        if (gameObject)
+        {
+            Object.Destroy(gameObject);
+        }
     }
 }
 
