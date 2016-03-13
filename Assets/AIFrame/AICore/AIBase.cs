@@ -16,6 +16,7 @@ public class AIBase
    
     #endregion
 
+   
     public GameObject gameObject
     {
         get { return mGameObj; }
@@ -36,7 +37,7 @@ public class AIBase
         get { return mController; }
     }
 
-    public virtual void OnUpdate()
+    public virtual void OnUpdate(float deltaTime)
     {
         
     }

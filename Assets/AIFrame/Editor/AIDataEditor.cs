@@ -19,7 +19,10 @@ public class AIDataEditor : EditorWindow {
     public Vector2 conditionListPos = new Vector2();
     public Vector2 selectionScrollPos = new Vector2();
     public AIDataSelection curSelection=new AIDataSelection();
-    
+
+   
+
+
     void Start()
     {
         LoadDataFromFile(true);
@@ -181,8 +184,8 @@ public class AIDataEditor : EditorWindow {
                         AIClip clip = clipGroup.aiClipList[i];
                         GUILayout.BeginHorizontal();
                         GUILayout.Space(indentSpace);
-                        if (AIFUIUtility.LayoutButtonWithColor(clip.NameOnUI,
-                            curSelection.selectedAiClip == clip ? Color.green : GUI.color, 150))
+                        Color col = curSelection.selectedAiClip == clip ? Color.green : GUI.color;
+                        if (AIFUIUtility.LayoutButtonWithColor(clip.NameOnUI,col,AIFGUISKin.GetStyle("button"),GUILayout.Width(150)))
                         {
                             curSelection.SelectAIDataUnit(groupUnit);
                             curSelection.SelectAIClip(clip);
@@ -216,11 +219,16 @@ public class AIDataEditor : EditorWindow {
 
         GUILayout.Label("当前选中");
         AIClip selectedClip = curSelection.selectedAiClip;
+        AIClipGroup selectedGroup = curSelection.selecteClipGroup;
         if (selectedClip != null)
         {
             selectedClip.name = AIFUIUtility.DrawTextField(selectedClip.name, "片断名称", 200);
             selectedClip.animationName = AIFUIUtility.DrawTextField(selectedClip.animationName, "动画名称", 200);
+            selectedClip.defaultLinkClip= AIFUIUtility.DrawAiLinkPopup(selectedGroup,  selectedClip.defaultLinkClip,"  默认连接",50);
+            selectedClip.animationTime = EditorGUILayout.FloatField("动画时长",selectedClip.animationTime, GUILayout.Width(120),GUILayout.ExpandWidth(true));
             selectedClip.attackRange = EditorGUILayout.FloatField(selectedClip.attackRange, GUILayout.Width(90));
+            selectedClip.CheckDirectionInput = GUILayout.Toggle(selectedClip.CheckDirectionInput, "方向输入", GUILayout.Width(90));
+
             GUILayout.BeginHorizontal();
             GUILayout.Label("连接片断列表：", GUILayout.Width(100));
             if (GUILayout.Button("添加连接", GUILayout.Width(100)))
@@ -244,6 +252,7 @@ public class AIDataEditor : EditorWindow {
                     if (AIFUIUtility.LayoutButtonWithColor(ai.linkToClip,curSelection.IsSelectedLinkClip(ai)?Color.cyan:Color.magenta,250))
                     {
                         curSelection.SelectLinkClip(ai);
+                        AILinkEditWnd.EditAILink(selectedGroup,ai);
                     }
                     if (GUILayout.Button("X", GUILayout.Width(20)))
                     {

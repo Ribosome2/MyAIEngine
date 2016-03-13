@@ -6,11 +6,15 @@ using System.Collections;
 /// </summary>
 public class AIForMainPlayer :AIUnit {
 
-    public override void OnUpdate()
+    public override void OnUpdate(float deltaTime)
     {
-        base.OnUpdate();
+        base.OnUpdate(deltaTime);
 
-        Move(CalculateMoveDelta());
+        if (CurAiClip.CheckDirectionInput)
+        {
+            Move(CalculateMoveDelta());
+        }
+       
     }
 
     private Vector3 CalculateMoveDelta()

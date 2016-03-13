@@ -13,6 +13,8 @@ public class AIUnit : AIBase
     private AIClipGroup mAiClipGroup;
 
     private Animator mAnimator;
+    private float mCurClipTime;
+
     public Animator animator
     {
         get
@@ -30,11 +32,32 @@ public class AIUnit : AIBase
         get { return mAiClipGroup; }
     }
 
+    public string Name
+    {
+        get
+        {
+            if (mAiClipGroup != null)
+            {
+                return mAiClipGroup.GroupName;
+            }
+            return "no name";
+        }
+    }
+    public AIClip CurAiClip
+    {
+        get { return mCurAIClip; }
+    }
     public override void SetModel(GameObject obj)
     {
         base.SetModel(obj);
         mAnimation = mGameObj.GetComponent<Animation>();
         UpdateShape();
+    }
+
+    public override void OnUpdate(float deltaTime)
+    {
+        base.OnUpdate(deltaTime);
+        CheckClipFinish(deltaTime);
     }
 
     public void UpdateShape()
@@ -72,7 +95,14 @@ public class AIUnit : AIBase
             Debug.LogError("不能设置空数据");
             return;
         }
-        mCurAIClip = aiClip;
+        if (mCurAIClip.animationName != aiClip.animationName)
+        {
+            mCurAIClip = aiClip;
+            Debug.Log("Switcing to " + aiClip.animationName);
+            PlayAnimation(mCurAIClip.animationName, 0);
+        }
+       
+      
     }
 
     public virtual void SwitchAIClipByName(string  clipName)
@@ -82,14 +112,45 @@ public class AIUnit : AIBase
             return targetClip.animationName == clipName;
         });
         SwitchAIClip(clip);
-
+        mCurClipTime = 0;
     }
 
 
     public override void Move(Vector3 deltaPos)
     {
         base.Move(deltaPos);
-        ChooseMovementAnimation(deltaPos);
+        CheckLinkClips();
+        if (mCurAIClip.CheckDirectionInput)
+        {
+            ChooseMovementAnimation(deltaPos);
+        }
+    }
+
+    public void CheckClipFinish(float deltaTime)
+    {
+        mCurClipTime += deltaTime;
+        //动画片断时间到，选择连接片断
+        if (mCurClipTime >= mCurAIClip.animationTime)
+        {
+            SwitchAIClipByName(mCurAIClip.defaultLinkClip);
+        }
+    }
+
+
+    /// <summary>
+    /// 检测是否可以连接到其他的片断
+    /// </summary>
+    public void CheckLinkClips()
+    {
+        for (int i = 0; i < mCurAIClip.linkAIClipList.Count; i++)
+        {
+            AILink link = mCurAIClip.linkAIClipList[i];
+            if (AILinkHelper.IsLinkConditionCheck(link))
+            {
+                SwitchAIClipByName(link.linkToClip);
+                break;
+            }
+        }
     }
 
     /// <summary>

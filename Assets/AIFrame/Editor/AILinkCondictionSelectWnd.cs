@@ -8,6 +8,13 @@ public class AILinkCondictionSelectWnd:EditorWindow
     public delegate  void SelectConditon(AILinkCondiction con);
 
     public SelectConditon onSelect;
+
+    public static void SelectNewCondition(SelectConditon callBack)
+    {
+        AILinkCondictionSelectWnd wnd = EditorWindow.GetWindow<AILinkCondictionSelectWnd>();
+        wnd.onSelect = callBack;
+    }
+
     void OnGUI()
     {
         if (GUILayout.Button("变量条件"))
@@ -33,6 +40,7 @@ public class AILinkCondictionSelectWnd:EditorWindow
         {
             onSelect(condiction);
         }
+        Close();
     }
 	
 }

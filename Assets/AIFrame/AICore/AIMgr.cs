@@ -25,9 +25,11 @@ public class AIMgr :Singleton<AIMgr>
 
     public void OnUpdate()
     {
+        InputManager.UpdateInput();
+
         for (int i = 0; i < listAIs.Count; i++)
         {
-            listAIs[i].OnUpdate();
+            listAIs[i].OnUpdate(Time.deltaTime);
         }
     }
 

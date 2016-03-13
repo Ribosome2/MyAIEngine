@@ -20,6 +20,7 @@ public class AIDataUnit
     }
     public int Id; //AI数据的唯一标识
     public string AiName="undefined";
+  
     public List<AIClipGroup> aiGroups = new List<AIClipGroup>();
 }
 

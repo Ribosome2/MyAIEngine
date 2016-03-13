@@ -51,6 +51,33 @@ public class AIFUIUtility {
        link.linkToClip=optionClips[EditorGUILayout.Popup(curSelectIndex, optionClips)];
         GUILayout.EndHorizontal();
     }
+
+    public static string  DrawAiLinkPopup(AIClipGroup clipGroup,  string curSelect,string strTip,int popUpWidth)
+    {
+        if (clipGroup == null)
+        {
+            GUILayout.Label("Ai组为空");
+            return"";
+        }
+        GUILayout.BeginHorizontal();
+        GUILayout.Label(strTip, GUILayout.Width(70));
+        string[] optionClips = new string[clipGroup.aiClipList.Count];
+        for (int i = 0; i < optionClips.Length; i++)
+        {
+            optionClips[i] = clipGroup.aiClipList[i].animationName;
+        }
+        int curSelectIndex = clipGroup.aiClipList.FindIndex(delegate(AIClip targetClip)
+        {
+            return targetClip.animationName == curSelect;
+        });
+        if (curSelectIndex < 0)
+            curSelectIndex = 0;
+        curSelect= optionClips[EditorGUILayout.Popup(curSelectIndex, optionClips,GUILayout.Width(popUpWidth))];
+        GUILayout.EndHorizontal();
+
+        return curSelect;
+    }
+
     /// <summary>
     /// 用制定颜色画按钮， 画完回复原来的颜色
     /// </summary>
@@ -64,6 +91,16 @@ public class AIFUIUtility {
         GUI.color = prevColor;
         return click;
     }
+
+    public static bool LayoutButtonWithColor(string content, Color color,GUIStyle style,params GUILayoutOption[] layoutOpt)
+    {
+        Color prevColor = GUI.color;
+        GUI.color = color;
+        bool click = GUILayout.Button(content,style, layoutOpt);
+        GUI.color = prevColor;
+        return click;
+    }
+
 
     public static Enum DrawCustomEnum(string strTip, Enum enumType, int tipWidth)
     {

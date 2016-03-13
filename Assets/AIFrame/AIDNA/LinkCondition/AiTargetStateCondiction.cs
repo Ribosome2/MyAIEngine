@@ -39,4 +39,6 @@ public class AiTargetStateCondiction:AILinkCondiction
     public ETargetType targetType;
     public AITargetState targetState;
 
+
+
 }

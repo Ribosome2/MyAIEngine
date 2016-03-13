@@ -18,6 +18,11 @@ public class AITestWnd : EditorWindow {
         {
             AIMgr.instance.DestroyAllAIs();
         }
+        if (GUILayout.Button("DebugWindow", GUILayout.Width(100)))
+        {
+            AIDebugWindow.Open();
+        }
+
         GUILayout.BeginHorizontal();
         aiModelName = AIFUIUtility.DrawTextField(aiModelName, "AI资源名");
         aiDataId = EditorGUILayout.IntField("AI数据ID", aiDataId);

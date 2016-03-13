@@ -17,17 +17,43 @@ public class AILinkEditWnd :EditorWindow
 
     }
 
+    public static void EditAILink(AIClipGroup clipGroup, AILink link)
+    {
+        AILinkEditWnd wnd = EditorWindow.GetWindow<AILinkEditWnd>();
+        wnd.SetData(clipGroup,link);
+    }
     void OnGUI()
     {
         if (aiLink!=null)
         {
+            aiLink.linkToClip = AIFUIUtility.DrawAiLinkPopup(srcGroup, aiLink.linkToClip, "目标片断", 50);
+           
             aiLink.checkAllCondition = GUILayout.Toggle(aiLink.checkAllCondition,"检查所有条件");
-            AIFUIUtility.DrawAiLinkPopup(srcGroup, aiLink);
-            AIFUIUtility.DrawAiLinkConditions(aiLink);
+           
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("连接条件：",GUILayout.Width(150));
+
+            if (GUILayout.Button("添加条件",GUILayout.Width(100)))
+            {
+                AILinkCondictionSelectWnd.SelectNewCondition(delegate(AILinkCondiction con)
+                {
+                    aiLink.linkConditionList.Add(con);
+                });
+            }
+            GUILayout.EndHorizontal();
+
+
+            for (int i = 0; i < aiLink.linkConditionList.Count; i++)
+            {
+                AILinkCondiction con = aiLink.linkConditionList[i];
+                GUILayout.BeginVertical();
+                con.OnEditorUI();
+                GUILayout.EndVertical();
+            }
 
         }
 
-        GUILayout.Button("确定");
+        //GUILayout.Button("确定");
     }
 
     
