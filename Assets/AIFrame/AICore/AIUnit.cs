@@ -47,6 +47,9 @@ public class AIUnit : AIBase
     {
         get { return mCurAIClip; }
     }
+
+    public EAiCamp aiCamp { get; set; }
+
     public override void SetModel(GameObject obj)
     {
         base.SetModel(obj);
@@ -58,6 +61,14 @@ public class AIUnit : AIBase
     {
         base.OnUpdate(deltaTime);
         CheckClipFinish(deltaTime);
+
+        CheckLinkClips();
+        Vector3 deltaPos = CalculateMoveDelta(deltaTime);
+        Move(deltaPos);
+        if (mCurAIClip.CheckDirectionInput)
+        {
+            ChooseMovementAnimation(deltaPos);
+        }
     }
 
     public void UpdateShape()
@@ -75,8 +86,22 @@ public class AIUnit : AIBase
     public virtual void SetAIDataUnit(AIDataUnit aiData)
     {
         mDataUnit = aiData;
+        
         SetAIClipGroup(mDataUnit.aiGroups[0]);
     }
+
+    public void SwitchAI(bool useAi)
+    {
+        if (useAi && mDataUnit.aiGroups.Count > 1)
+        {
+            SetAIClipGroup(mDataUnit.aiGroups[1]);
+        }
+        else
+        {
+            SetAIClipGroup(mDataUnit.aiGroups[0]);
+        }
+    }
+
     /// <summary>
     /// 设置AI组数据
     /// </summary>
@@ -97,33 +122,37 @@ public class AIUnit : AIBase
         }
         if (mCurAIClip.animationName != aiClip.animationName)
         {
-            mCurAIClip = aiClip;
+           
             Debug.Log("Switcing to " + aiClip.animationName);
-            PlayAnimation(mCurAIClip.animationName, 0);
+            PlayAnimation(aiClip.animationName, 0);
         }
-       
+        mCurAIClip = aiClip;
       
     }
 
-    public virtual void SwitchAIClipByName(string  clipName)
+    public virtual void SwitchAIClipByClipKey(string  clipKey)
     {
+        if (CurAiClip != null && CurAiClip.clipKey == clipKey) //当前已经是在目标片断， 不要重复切换
+        {
+            return;
+        }
+        mCurClipTime = 0;
+
         AIClip clip = mAiClipGroup.aiClipList.Find(delegate(AIClip targetClip)
         {
-            return targetClip.animationName == clipName;
+            return targetClip.clipKey == clipKey;
         });
         SwitchAIClip(clip);
-        mCurClipTime = 0;
+        
     }
 
 
     public override void Move(Vector3 deltaPos)
     {
         base.Move(deltaPos);
-        CheckLinkClips();
-        if (mCurAIClip.CheckDirectionInput)
-        {
-            ChooseMovementAnimation(deltaPos);
-        }
+        
+        
+        
     }
 
     public void CheckClipFinish(float deltaTime)
@@ -132,7 +161,7 @@ public class AIUnit : AIBase
         //动画片断时间到，选择连接片断
         if (mCurClipTime >= mCurAIClip.animationTime)
         {
-            SwitchAIClipByName(mCurAIClip.defaultLinkClip);
+            SwitchAIClipByClipKey(mCurAIClip.defaultLinkClip);
         }
     }
 
@@ -145,9 +174,9 @@ public class AIUnit : AIBase
         for (int i = 0; i < mCurAIClip.linkAIClipList.Count; i++)
         {
             AILink link = mCurAIClip.linkAIClipList[i];
-            if (AILinkHelper.IsLinkConditionCheck(link))
+            if (AILinkHelper.IsLinkConditionCheck(link,this))
             {
-                SwitchAIClipByName(link.linkToClip);
+                SwitchAIClipByClipKey(link.linkToClip);
                 break;
             }
         }
@@ -163,11 +192,12 @@ public class AIUnit : AIBase
         {
             if (deltaMove.x == 0 &&  deltaMove.z == 0)
             {
-                PlayAnimation(AiGroupData.commonAnimation.idle, 0.1f);
+                
+                SwitchAIClipByClipKey(AiGroupData.commonAnimation.idle);
             }
             else
             {
-                PlayAnimation(AiGroupData.commonAnimation.run, 0.1f);
+                SwitchAIClipByClipKey(AiGroupData.commonAnimation.run);
                 FaceToDirection(deltaMove);
             }
         }
@@ -198,4 +228,62 @@ public class AIUnit : AIBase
 
         transform.rotation =Quaternion.LookRotation(dirWitoutY);
     }
+
+    private Vector3 CalculateMoveDelta(float deltaTime)
+    {
+        Vector3 deltaPos=Vector3.zero;
+        if (CurAiClip.CheckDirectionInput) //用输入控制
+        {
+            deltaPos=new Vector3(InputManager.inputVector.x, 0,
+                InputManager.inputVector.y);
+            deltaPos = (relativeForward*deltaPos.z + relativeRight*deltaPos.x)*mMoveSpeed;
+            deltaPos.y = 0;
+            
+        }else if (CurAiClip.runToTarget) //跑向目标
+        {
+            //暂时直接往目标方向，
+            //todo 算出实际寻路方向
+            AIUnit target = AIMgr.instance.FindFirstEnemy(this);
+            if (target != null)
+            {
+                deltaPos = (target.Position - Position).normalized*mMoveSpeed;
+                deltaPos.y = 0;
+                FaceToDirection(deltaPos);
+            }
+        }
+        deltaPos = (deltaPos + Physics.gravity) * Time.deltaTime;
+        return deltaPos;
+    }
+
+    public override void OnDrawGizmos()
+    {
+        base.OnDrawGizmos();
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(Position, Position + relativeForward * 5);
+        Gizmos.DrawLine(Position, Position + relativeRight * 5);
+    }
+
+    /// <summary>
+    /// 相对于主摄像机的向前方向
+    /// </summary>
+    public Vector3 relativeForward
+    {
+        get
+        {
+            Vector3 forwad = Camera.main.transform.forward;
+            forwad.y = 0;
+            return forwad.normalized;
+        }
+    }
+
+    public Vector3 relativeRight
+    {
+        get
+        {
+            Vector3 right = Camera.main.transform.right;
+            right.y = 0;
+            return right.normalized;
+        }
+    }
+
 }

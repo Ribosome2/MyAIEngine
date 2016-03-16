@@ -16,12 +16,12 @@ public class AIFUIUtility {
         GUILayout.Label(strTip,GUILayout.ExpandWidth(false));
         if (width > 0)
         {
-            content = GUILayout.TextField(content,GUILayout.Width(width));
+            content = EditorGUILayout.TextField(content, GUILayout.Width(width));
 
         }
         else
         {
-            content = GUILayout.TextField(content);
+            content = EditorGUILayout.TextField(content);
         }
         GUILayout.EndHorizontal();
         return content;
@@ -40,15 +40,18 @@ public class AIFUIUtility {
         string[] optionClips =new string[clipGroup.aiClipList.Count];
         for (int i = 0; i < optionClips.Length; i++)
         {
-            optionClips[i] = clipGroup.aiClipList[i].animationName;
+            optionClips[i] = clipGroup.aiClipList[i].NameOnUI;
         }
         int curSelectIndex = clipGroup.aiClipList.FindIndex(delegate(AIClip targetClip)
         {
-            return targetClip.animationName == link.linkToClip;
+            return targetClip.clipKey == link.linkToClip;
         });
         if (curSelectIndex < 0)
             curSelectIndex = 0;
-       link.linkToClip=optionClips[EditorGUILayout.Popup(curSelectIndex, optionClips)];
+
+        curSelectIndex = EditorGUILayout.Popup(curSelectIndex, optionClips); //最终的选择
+        link.linkToClip = clipGroup.aiClipList[curSelectIndex].clipKey;
+     
         GUILayout.EndHorizontal();
     }
 
@@ -62,21 +65,26 @@ public class AIFUIUtility {
         GUILayout.BeginHorizontal();
         GUILayout.Label(strTip, GUILayout.Width(70));
         string[] optionClips = new string[clipGroup.aiClipList.Count];
-        for (int i = 0; i < optionClips.Length; i++)
+        for (int i = 0; i < optionClips.Length; i++) //显示的是全名， 但是我们记录的是键值
         {
-            optionClips[i] = clipGroup.aiClipList[i].animationName;
+            optionClips[i] = clipGroup.aiClipList[i].NameOnUI;
         }
         int curSelectIndex = clipGroup.aiClipList.FindIndex(delegate(AIClip targetClip)
         {
-            return targetClip.animationName == curSelect;
+            return targetClip.clipKey == curSelect;
         });
         if (curSelectIndex < 0)
             curSelectIndex = 0;
-        curSelect= optionClips[EditorGUILayout.Popup(curSelectIndex, optionClips,GUILayout.Width(popUpWidth))];
+
+        curSelectIndex = EditorGUILayout.Popup(curSelectIndex, optionClips, GUILayout.Width(popUpWidth));
+        curSelect = clipGroup.aiClipList[curSelectIndex].clipKey;
         GUILayout.EndHorizontal();
 
         return curSelect;
     }
+
+
+
 
     /// <summary>
     /// 用制定颜色画按钮， 画完回复原来的颜色
@@ -132,15 +140,61 @@ public class AIFUIUtility {
     }
 
 
-    public static void DrawCommanAnimation(AICommonAnimation  comAnim)
+    public static void DrawCommanAnimation(AICommonAnimation  comAnim,AIClipGroup clipGroup)
     {
         GUILayout.Label("AI通用片断");
-        comAnim.die = AIFUIUtility.DrawTextField(comAnim.die, "死亡倒地", 100);
-        comAnim.hit = AIFUIUtility.DrawTextField(comAnim.hit, "被击中", 100);
-        comAnim.idle = AIFUIUtility.DrawTextField(comAnim.idle, "待机", 100);
-        comAnim.run = AIFUIUtility.DrawTextField(comAnim.run, "奔跑", 100);
-        comAnim.walk = AIFUIUtility.DrawTextField(comAnim.walk, "走路", 100);
+        comAnim.die = AIFUIUtility.DrawAiLinkPopup(clipGroup, comAnim.die, "  默认连接", 150);
+        comAnim.hit = AIFUIUtility.DrawAiLinkPopup(clipGroup, comAnim.hit, "  受击", 150);
+        comAnim.idle = AIFUIUtility.DrawAiLinkPopup(clipGroup, comAnim.idle, "  默认待机", 150);
+        comAnim.run = AIFUIUtility.DrawAiLinkPopup(clipGroup, comAnim.run, "  跑步", 150);
+        comAnim.walk = AIFUIUtility.DrawAiLinkPopup(clipGroup, comAnim.walk, "  走路", 150);
 
+    }
+
+    /// <summary>
+    /// 绘制片断时间列表
+    /// </summary>
+    /// <param name="clip"></param>
+    public static void DrawAiEvetList(AIClip clip)
+    {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("事件列表", GUILayout.Width(100));
+
+        if (GUILayout.Button("add", GUILayout.Width(40)))
+        {
+            AIEventEditWnd.OpenCreateEditor(delegate(AIClipEvent e)
+            {
+                clip.AiClipEvents.Add(e);
+            });
+        }
+        GUILayout.EndHorizontal();
+        if (clip.AiClipEvents.Count == 0)
+        {
+            GUILayout.Label("事件列表为空");
+        }
+        else
+        {
+            for (int i = 0; i < clip.AiClipEvents.Count; i++)
+            {
+                AIClipEvent evet = clip.AiClipEvents[i];
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button(evet.eventName, GUILayout.Width(150)))
+                {
+                    AIEventEditWnd.OpenAsEditMode(evet);
+                }
+                if(GUILayout.Button("X",GUILayout.Width(30)))
+                {
+                    if (EditorUtility.DisplayDialog("警告", "确定删除事件吗", "确定", "取消"))
+                    {
+                        clip.AiClipEvents.Remove(evet);
+                        return;
+                    }
+
+                }
+                GUILayout.EndHorizontal();
+            }
+        }
+       
     }
 
 
@@ -201,11 +255,29 @@ public class AIFUIUtility {
         con.varType = (VarType)DrawCustomEnum("变量类型", con.varType,70);
         con.compareType = (CompareType)DrawCustomEnum("比较类型", con.compareType,70);
     }
-    static void DrawLinkConditon(AiTargetStateCondiction con)
+    public static void DrawLinkConditon(AiTargetStateCondiction con)
     {
         con.targetType = (ETargetType)DrawCustomEnum("目标类型", con.targetType, 50);
-        con.targetState= (AITargetState)DrawCustomEnum("目标状态", con.targetState, 50);
+        con.targetState= (ETargetState)DrawCustomEnum("目标状态", con.targetState, 50);
+        con.targetDistance = EditorGUILayout.FloatField("目标距离", con.targetDistance, GUILayout.ExpandWidth(false));
     } 
     #endregion
+
+    public static void DrawAIClip(AIClip clip,AIClipGroup paretGroup)
+    {
+        clip.clipKey = AIFUIUtility.DrawTextField(clip.clipKey, "动画片断键值", 100);
+        clip.name = AIFUIUtility.DrawTextField(clip.name, "片断名称", 200);
+        clip.animationName = AIFUIUtility.DrawTextField(clip.animationName, "动画名称", 200);
+        if (paretGroup != null)
+        {
+            clip.defaultLinkClip = AIFUIUtility.DrawAiLinkPopup(paretGroup, clip.defaultLinkClip, "  默认连接", 150);
+        }
+        clip.animationTime = EditorGUILayout.FloatField("动画时长", clip.animationTime, GUILayout.Width(120), GUILayout.ExpandWidth(true));
+        clip.attackRange = EditorGUILayout.FloatField(clip.attackRange, GUILayout.Width(90));
+        clip.CheckDirectionInput = GUILayout.Toggle(clip.CheckDirectionInput, "方向输入", GUILayout.Width(90));
+        clip.runToTarget = GUILayout.Toggle(clip.runToTarget, "跑向目标", GUILayout.Width(90));
+
+    }
+
 
 }

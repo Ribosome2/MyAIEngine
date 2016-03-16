@@ -10,6 +10,8 @@ public class AITestWnd : EditorWindow {
 
     private string aiModelName="";
     private int aiDataId = 0;
+    public EAiCamp createCamp;
+    private bool createAsAI;
 
     void OnGUI()
     {
@@ -22,13 +24,17 @@ public class AITestWnd : EditorWindow {
         {
             AIDebugWindow.Open();
         }
-
+        createCamp = (EAiCamp) EditorGUILayout.EnumPopup("创建阵营", createCamp);
+        createAsAI = EditorGUILayout.Toggle("asAi", createAsAI);
         GUILayout.BeginHorizontal();
         aiModelName = AIFUIUtility.DrawTextField(aiModelName, "AI资源名");
         aiDataId = EditorGUILayout.IntField("AI数据ID", aiDataId);
+       
         if (GUILayout.Button("Create"))
         {
-            AIMgr.instance.CreateAI(aiModelName,aiDataId);
+            AIUnit ai= AIMgr.instance.CreateAI(aiModelName,aiDataId);
+            ai.aiCamp = createCamp;
+            ai.SwitchAI(createAsAI);
         }
         GUILayout.EndHorizontal();
 

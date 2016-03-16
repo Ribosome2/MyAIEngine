@@ -26,7 +26,7 @@ public class AILinkEditWnd :EditorWindow
     {
         if (aiLink!=null)
         {
-            aiLink.linkToClip = AIFUIUtility.DrawAiLinkPopup(srcGroup, aiLink.linkToClip, "目标片断", 50);
+            aiLink.linkToClip = AIFUIUtility.DrawAiLinkPopup(srcGroup, aiLink.linkToClip, "目标片断", 150);
            
             aiLink.checkAllCondition = GUILayout.Toggle(aiLink.checkAllCondition,"检查所有条件");
            
@@ -46,7 +46,20 @@ public class AILinkEditWnd :EditorWindow
             for (int i = 0; i < aiLink.linkConditionList.Count; i++)
             {
                 AILinkCondiction con = aiLink.linkConditionList[i];
+                EditorGUILayout.Separator();
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("X", GUILayout.Width(30)))
+                {
+                    if (EditorUtility.DisplayDialog("提示", "删除条件？", "OK"))
+                    {
+                        aiLink.linkConditionList.Remove(con);
+                    }
+                }
+                GUILayout.Label(con.ToString());
+                
+                GUILayout.EndHorizontal();
                 GUILayout.BeginVertical();
+
                 con.OnEditorUI();
                 GUILayout.EndVertical();
             }

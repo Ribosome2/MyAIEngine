@@ -9,11 +9,14 @@ using System.Xml.Serialization;
 //!!!!!! 序列化有继承关系的列表的话， 没有XmlInclude 会序列化失败
 public abstract class AILinkCondiction
 {
+#if UNITY_EDITOR
    // public abstract bool IsConditionMet();
     public virtual void OnEditorUI()
-    { 
-        
+    {
+       
+
     }
+#endif
 }
 
 

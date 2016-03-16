@@ -12,6 +12,7 @@ public class AIDataSet
 /// 单个英雄的AI数据，一个英雄可以在AI组库里选择一个作为当前AI组， 
 /// 比如主控组切换到跟随组等等
 /// </summary>
+[System.Serializable]
 public class AIDataUnit
 {
     public string NameOnUI
@@ -27,6 +28,7 @@ public class AIDataUnit
 /// <summary>
 /// AI 片断组，用于保存一个AI所有可能切换的AIClip以及在这个状态组的基本属性信息
 /// </summary>
+[System.Serializable]
 public class AIClipGroup
 {
     public string GroupName
@@ -46,12 +48,16 @@ public class AIClipGroup
     public AIShape shape=new AIShape();
     public List<AIClip> aiClipList = new List<AIClip>();
     public AICommonAnimation commonAnimation = new AICommonAnimation();
+    public ETargetType targetType=ETargetType.Enemy;
+
+    
 
 }
 
 /// <summary>
 /// 用作当前AI组公用动画片断名
 /// </summary>
+[System.Serializable]
 public class AICommonAnimation
 {
     public string idle="";
@@ -66,6 +72,7 @@ public class AICommonAnimation
 /// <summary>
 /// 定义一个AI的外表形态，碰撞体宽高，整体Scale等
 /// </summary>
+[System.Serializable]
 public class AIShape
 {
     /// <summary>

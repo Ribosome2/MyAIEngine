@@ -41,8 +41,7 @@ public class AIClipEditWnd :EditorWindow
                     }
                 }
             }
-            mDataUnit.animationName = AIFUIUtility.DrawTextField(mDataUnit.animationName, "动画片断名", 100);
-            mDataUnit.name = AIFUIUtility.DrawTextField(mDataUnit.name, "名字");
+           AIFUIUtility.DrawAIClip(mDataUnit, mClipGroup);
             
         }
     }
