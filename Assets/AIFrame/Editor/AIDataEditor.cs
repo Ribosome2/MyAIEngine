@@ -234,6 +234,16 @@ public class AIDataEditor : EditorWindow {
                 wnd.SetData(curSelection.selecteClipGroup,link);
             }
             GUILayout.EndHorizontal();
+
+            GUILayout.BeginArea(new Rect(250, 150, 500, 700));
+            AIFUIUtility.DrawAiEvetList(selectedClip);
+            GUILayout.EndArea();
+
+            GUILayout.BeginArea(new Rect(450, 150, 500, 700));
+            AIFUIUtility.DrawHitDefinitionList(selectedClip);
+            GUILayout.EndArea();
+
+            #region Links
             if (selectedClip.linkAIClipList.Count == 0)
             {
                 GUILayout.Label("空列表", GUILayout.Width(300));
@@ -245,10 +255,10 @@ public class AIDataEditor : EditorWindow {
                     AILink ai = selectedClip.linkAIClipList[i];
                     GUILayout.BeginHorizontal();
                     //string fullClipName=
-                    if (AIFUIUtility.LayoutButtonWithColor(ai.linkToClip,curSelection.IsSelectedLinkClip(ai)?Color.cyan:Color.magenta,150))
+                    if (AIFUIUtility.LayoutButtonWithColor(ai.linkToClip, curSelection.IsSelectedLinkClip(ai) ? Color.cyan : Color.magenta, 150))
                     {
                         curSelection.SelectLinkClip(ai);
-                        AILinkEditWnd.EditAILink(selectedGroup,ai);
+                        AILinkEditWnd.EditAILink(selectedGroup, ai);
                     }
                     if (GUILayout.Button("X", GUILayout.Width(20)))
                     {
@@ -262,13 +272,7 @@ public class AIDataEditor : EditorWindow {
                 }
 
 
-                GUILayout.BeginArea(new Rect(300, 150, 500, 700));
-                
-               
-               
-                AIFUIUtility.DrawAiEvetList(selectedClip);
-               
-                GUILayout.EndArea();
+
 
                 #region 绘制选择连接
                 //AILink link = curSelection.SelectedLink;
@@ -282,7 +286,11 @@ public class AIDataEditor : EditorWindow {
                 //    GUILayout.EndArea();
                 //} 
                 #endregion
-            }
+            } 
+            #endregion
+
+           
+
         }
         else  //没选中AI片断就检测时候在编辑AI组
         {

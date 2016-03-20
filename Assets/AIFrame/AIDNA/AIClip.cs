@@ -47,6 +47,11 @@ public class AIClip
     /// 向目标靠近
     /// </summary>
     public bool runToTarget=false;
+
+    /// <summary>
+    /// 击中定义列表
+    /// </summary>
+    public List<AiClipHitData> hitCheckList = new List<AiClipHitData>(); 
 }
 
 [System.Serializable]

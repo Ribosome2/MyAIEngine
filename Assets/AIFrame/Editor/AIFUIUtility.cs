@@ -197,6 +197,39 @@ public class AIFUIUtility {
        
     }
 
+    /// <summary>
+    /// 绘制攻击定义列表
+    /// </summary>
+    /// <param name="clip"></param>
+    public static void DrawHitDefinitionList(AIClip clip)
+    {
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("攻击定义列表",GUILayout.Width(100));
+        if(GUILayout.Button("Add",GUILayout.Width(40)))
+        {
+            clip.hitCheckList.Add(new AiClipHitData());
+        }
+        GUILayout.EndHorizontal();
+        for (int i = 0; i < clip.hitCheckList.Count; i++)
+        {
+            AiClipHitData hitCheck = clip.hitCheckList[i];
+            GUILayout.BeginHorizontal();
+            if(GUILayout.Button(hitCheck.name,GUILayout.Width(150)))
+            {
+                HitDataEditWnd.Open(hitCheck);
+            }
+            if(GUILayout.Button("X",GUILayout.Width(40)))
+            {
+                if (EditorUtility.DisplayDialog("tips", "确定删除攻击定义？", "OK"))
+                {
+                    clip.hitCheckList.Remove(hitCheck);
+                    break;
+                    
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+    }
 
     #region DrawLinkCondition
     public static void DrawAiLinkConditions(AILink link)

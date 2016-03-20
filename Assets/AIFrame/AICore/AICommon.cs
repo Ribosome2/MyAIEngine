@@ -18,4 +18,16 @@ public enum EAiCamp
 
 }
 
+public enum EHitCheckShape
+{
+    Capsule,//胶囊体
+    Cylinder,//圆柱体
+    /// <summary>
+    /// 扇形
+    /// </summary>
+    Fan,
+
+}
+
+
 

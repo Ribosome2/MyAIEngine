@@ -63,6 +63,7 @@ public class AIUnit : AIBase
         CheckClipFinish(deltaTime);
 
         CheckLinkClips();
+        CheckHitList();
         Vector3 deltaPos = CalculateMoveDelta(deltaTime);
         Move(deltaPos);
         if (mCurAIClip.CheckDirectionInput)
@@ -147,14 +148,6 @@ public class AIUnit : AIBase
     }
 
 
-    public override void Move(Vector3 deltaPos)
-    {
-        base.Move(deltaPos);
-        
-        
-        
-    }
-
     public void CheckClipFinish(float deltaTime)
     {
         mCurClipTime += deltaTime;
@@ -178,6 +171,19 @@ public class AIUnit : AIBase
             {
                 SwitchAIClipByClipKey(link.linkToClip);
                 break;
+            }
+        }
+    }
+
+    public void CheckHitList()
+    {
+        for (int i = 0; i < mCurAIClip.hitCheckList.Count; i++)
+        {
+            AiClipHitData hitData = mCurAIClip.hitCheckList[i];
+            //只计算在攻击时间内的
+            if (mCurClipTime >= hitData.startTime && mCurClipTime <= hitData.startTime + hitData.lastTime)
+            {
+                
             }
         }
     }
