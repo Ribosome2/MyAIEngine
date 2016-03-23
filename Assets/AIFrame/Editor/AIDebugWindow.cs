@@ -33,7 +33,7 @@ public class AIDebugWindow : EditorWindow {
                 }
                 if (GUILayout.Button("Delete"))
                 {
-                    AIMgr.instance.DestroyAllAIs();
+                    AIMgr.instance.DestroyAI(ai);
                 }
                 GUILayout.EndHorizontal();
             }

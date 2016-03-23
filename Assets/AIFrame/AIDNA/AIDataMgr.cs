@@ -16,10 +16,15 @@ public class AIDataMgr:Singleton<AIDataMgr>
         {
             if (mDataSet == null)
             {
-                mDataSet=LoadDataFromFile();
+                LoadNewData();
             }
             return mDataSet;
         }
+    }
+
+    public  void LoadNewData()
+    {
+        mDataSet = LoadDataFromFile();
     }
 
 

@@ -10,7 +10,14 @@ public class AiClipHitData
     public float startTime = 0;
     public float lastTime=1f;
     public float hitInterval = 0.2f;
+    /// <summary>
+    /// 显示实体资源名
+    /// </summary>
+    public string entityResName = "";
+
+    public Vector3 startPosition;
     public HitCheckBase hitCheckData=new HitCheckBase();
+    
 }
 
 

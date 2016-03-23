@@ -42,12 +42,12 @@ public class AIMgr :Singleton<AIMgr>
             listAIs[i].OnDrawGizmos();
         }
     }
-    public AIBase GetMainPlayer()
+    public AIUnit GetMainPlayer()
     {
         for (int i = 0; i < listAIs.Count; i++)
         {
-            AIBase ai = listAIs[i];
-            if (ai is AIForMainPlayer)
+            AIUnit ai = listAIs[i];
+            if (ai.aiCamp==EAiCamp.MainPlayer)
             {
                 return ai;
             }

@@ -27,6 +27,8 @@ public class HitDataEditWnd : EditorWindow {
             mHitData.startTime = EditorGUILayout.FloatField("开始触发时间",mHitData.startTime );
             mHitData.lastTime = EditorGUILayout.FloatField( "持续时间",mHitData.lastTime);
             mHitData.hitInterval = EditorGUILayout.FloatField("攻击间隔", mHitData.hitInterval);
+            mHitData.entityResName = EditorGUILayout.TextField("显示实体资源", mHitData.entityResName);
+            mHitData.startPosition = EditorGUILayout.Vector3Field("初始位置", mHitData.startPosition);
 
             EditorGUILayout.Separator();
             GUILayout.Label("击中判定：");

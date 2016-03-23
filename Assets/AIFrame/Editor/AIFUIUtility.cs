@@ -306,7 +306,7 @@ public class AIFUIUtility {
             clip.defaultLinkClip = AIFUIUtility.DrawAiLinkPopup(paretGroup, clip.defaultLinkClip, "  默认连接", 150);
         }
         clip.animationTime = EditorGUILayout.FloatField("动画时长", clip.animationTime, GUILayout.Width(120), GUILayout.ExpandWidth(true));
-        clip.attackRange = EditorGUILayout.FloatField(clip.attackRange, GUILayout.Width(90));
+        clip.attackRange = EditorGUILayout.FloatField("攻击范围",clip.attackRange, GUILayout.Width(90));
         clip.CheckDirectionInput = GUILayout.Toggle(clip.CheckDirectionInput, "方向输入", GUILayout.Width(90));
         clip.runToTarget = GUILayout.Toggle(clip.runToTarget, "跑向目标", GUILayout.Width(90));
 

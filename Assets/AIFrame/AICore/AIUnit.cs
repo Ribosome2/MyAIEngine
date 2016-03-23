@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿
+using System.Collections.Generic;
+using UnityEngine;
 using System.Collections;
 
 /// <summary>
@@ -14,6 +16,13 @@ public class AIUnit : AIBase
 
     private Animator mAnimator;
     private float mCurClipTime;
+
+    public float CurClipTime
+    {
+        get { return mCurClipTime; }
+            
+      
+    }
 
     public Animator animator
     {
@@ -49,7 +58,38 @@ public class AIUnit : AIBase
     }
 
     public EAiCamp aiCamp { get; set; }
+    private AIHitManager mHitManager;
+    List<AIEventListener> mEventListeners=new List<AIEventListener>();
 
+    public AIUnit()
+    {
+        mHitManager=new AIHitManager(this);
+    }
+
+    public void AddEventListener(AIEventListener listener)
+    {
+        if (listener != null && mEventListeners.Contains(listener) == false)
+        {
+            mEventListeners.Add(listener);
+        }
+    }
+
+    public void RemoveEventListener(AIEventListener listener)
+    {
+        if (mEventListeners.Contains(listener))
+        {
+            mEventListeners.Remove(listener);
+        }
+    }
+
+    public void NotifyEvent(EAiEventType type)
+    {
+        for (int i = 0; i < mEventListeners.Count; i++)
+        {
+            AIEventListener listener = mEventListeners[i];
+            listener.OnEvent(this,type);
+        }
+    }
     public override void SetModel(GameObject obj)
     {
         base.SetModel(obj);
@@ -63,13 +103,13 @@ public class AIUnit : AIBase
         CheckClipFinish(deltaTime);
 
         CheckLinkClips();
-        CheckHitList();
         Vector3 deltaPos = CalculateMoveDelta(deltaTime);
         Move(deltaPos);
         if (mCurAIClip.CheckDirectionInput)
         {
             ChooseMovementAnimation(deltaPos);
         }
+        NotifyEvent(EAiEventType.OnUpdate);
     }
 
     public void UpdateShape()
@@ -128,6 +168,7 @@ public class AIUnit : AIBase
             PlayAnimation(aiClip.animationName, 0);
         }
         mCurAIClip = aiClip;
+        NotifyEvent(EAiEventType.SwitchAiClip);
       
     }
 
@@ -175,18 +216,7 @@ public class AIUnit : AIBase
         }
     }
 
-    public void CheckHitList()
-    {
-        for (int i = 0; i < mCurAIClip.hitCheckList.Count; i++)
-        {
-            AiClipHitData hitData = mCurAIClip.hitCheckList[i];
-            //只计算在攻击时间内的
-            if (mCurClipTime >= hitData.startTime && mCurClipTime <= hitData.startTime + hitData.lastTime)
-            {
-                
-            }
-        }
-    }
+
 
     /// <summary>
     /// 根据移动向量来选择移动的动画
@@ -292,4 +322,22 @@ public class AIUnit : AIBase
         }
     }
 
+
+    public bool CheckHit(AIUnit attacker, AiClipHitData hitData)
+    {
+        if (AIMgr.IsAntiCamp(attacker, this)==false)
+        {
+            return false;
+        }
+        //todo 编写击中检测算法
+        SwitchAIClipByClipKey(mAiClipGroup.commonAnimation.hit);
+        return true;
+        return false;
+    }
+
+    public override void Destroy()
+    {
+        base.Destroy();
+        NotifyEvent(EAiEventType.Dead);
+    }
 }
