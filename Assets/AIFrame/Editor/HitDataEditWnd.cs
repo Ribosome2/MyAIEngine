@@ -8,8 +8,11 @@ public class HitDataEditWnd : EditorWindow {
     public static void Open(AiClipHitData hitData)
     {
         HitDataEditWnd wnd = EditorWindow.GetWindow<HitDataEditWnd>();
+        
         wnd.SetData(hitData);
     }
+
+    
 
   
     private AiClipHitData mHitData;
@@ -18,6 +21,8 @@ public class HitDataEditWnd : EditorWindow {
     {
         mHitData = hitData;
     }
+
+    
 
     public void OnGUI()
     {
@@ -37,9 +42,86 @@ public class HitDataEditWnd : EditorWindow {
             hitCheck.posOffset = EditorGUILayout.Vector3Field("位置偏移", hitCheck.posOffset);
             hitCheck.radius = EditorGUILayout.FloatField("半径", hitCheck.radius);
             hitCheck.height = EditorGUILayout.FloatField("高度", hitCheck.height);
-            
+            hitCheck.angle = EditorGUILayout.FloatField("攻击角度", hitCheck.angle);
+
 
         }
     }
+
+    void Update()
+    {
+        SceneView.RepaintAll();
+       // HandleUtility.Repaint();
+    }
+
+
+    void OnDestroy()
+    {
+        if (mDebugDummy)
+        {
+            Object.DestroyImmediate(mDebugDummy);
+        }
+    }
+
+    void OnFocus()
+    {
+        SceneView.onSceneGUIDelegate += OnSceneUI;
+    }
+
+    void OnLostFocus()
+    {
+        SceneView.onSceneGUIDelegate -= OnSceneUI;
+    }
+
+    void OnSceneUI(SceneView sceneView)
+    {
+        if (mHitData != null)
+        {
+            HitCheckBase hitCheck = mHitData.hitCheckData;
+            Vector3 pos = debugDummy.transform.TransformPoint(mHitData.startPosition) + hitCheck.posOffset;
+            Vector3 normal = debugDummy.transform.up;
+            if (hitCheck.shapeType == EHitCheckShape.Fan)
+            {
+                Vector3 startVec = Quaternion.AngleAxis(-hitCheck.angle*0.5f, normal) * debugDummy.transform.forward;
+                GizmosExtension.DrawFanShapeWithHeight(pos, normal, startVec, hitCheck.angle, hitCheck.radius, hitCheck.height);
+            }else if (hitCheck.shapeType == EHitCheckShape.Capsule)
+            {
+                
+            }
+        }
+        
+    }
+
+    private GameObject mDebugDummy;
+    GameObject debugDummy
+    {
+        get
+        {
+            if (mDebugDummy == null)
+            {
+                const  string dummyName= "HitDataDebugDummy";
+                mDebugDummy = GameObject.Find(dummyName);
+                if (mDebugDummy == null)
+                {
+
+
+                    GameObject prefab = Resources.Load<GameObject>("HitDebug");
+                    if (prefab == null)
+                    {
+                        mDebugDummy = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+                    }
+                    else
+                    {
+                        mDebugDummy = Object.Instantiate(prefab) as GameObject;
+                    }
+                    mDebugDummy.name = dummyName;
+                    mDebugDummy.hideFlags = HideFlags.DontSave;
+                }
+            }
+            return mDebugDummy;
+        }
+    }
+
+    
 
 }

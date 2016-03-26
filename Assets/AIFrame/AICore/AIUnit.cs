@@ -323,16 +323,42 @@ public class AIUnit : AIBase
     }
 
 
-    public bool CheckHit(AIUnit attacker, AiClipHitData hitData)
+    public bool CheckHit(AIUnit attacker, AIHitUnit hitUnit)
     {
         if (AIMgr.IsAntiCamp(attacker, this)==false)
         {
             return false;
         }
-        //todo 编写击中检测算法
-        SwitchAIClipByClipKey(mAiClipGroup.commonAnimation.hit);
-        return true;
-        return false;
+        bool isHit = false;
+        AiClipHitData hitData = hitUnit.mHitData;
+        HitCheckBase hitCheck = hitData.hitCheckData;
+        switch (hitData.hitCheckData.shapeType)
+        {
+            case EHitCheckShape.Capsule:case EHitCheckShape.Cylinder:
+            {
+                if(MathTool.CheckCylinderHit(hitUnit.pos,hitData.hitCheckData.height,hitData.hitCheckData.radius,Controller))
+                {
+                    isHit = true;
+                }
+                break;
+            }case EHitCheckShape.Fan:
+            {
+                if(MathTool.CheckFanHit(hitUnit.pos,hitCheck.height,hitCheck.radius,hitCheck.angle,hitUnit.forwardDir,Controller))
+                {
+                    isHit = true;
+                }
+                break;
+            }
+        }
+
+        if (isHit)
+        {
+            //todo 编写击中检测算法
+            SwitchAIClipByClipKey(mAiClipGroup.commonAnimation.hit);
+        }
+       
+        return isHit;
+        
     }
 
     public override void Destroy()

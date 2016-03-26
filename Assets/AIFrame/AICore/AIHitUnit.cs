@@ -6,7 +6,10 @@ using System.Collections;
 /// </summary>
 public class AIHitUnit
 {
-
+    public AIHitUnit()
+    {
+        AIMgr.instance.DrawGizmosEvent += DrawGizmos;
+    }
     /// <summary>
     /// 伤害外形物体
     /// </summary>
@@ -14,12 +17,19 @@ public class AIHitUnit
     /// <summary>
     /// 攻击定义数据
     /// </summary>
-    protected AiClipHitData mHitData;
+    public  AiClipHitData mHitData;
     Dictionary<AIUnit, float> mHitRecord = new Dictionary<AIUnit, float>();
     protected AIUnit mOwner;
-    protected Vector3 pos;
+    public  Vector3 pos;
     private float mLiveTime;
     private int mCurHitCount;//击中次数
+    private float eulerAngleY;
+
+    public Vector3 forwardDir
+    {
+        get { return mOwner.transform.forward; }
+    }
+
     public bool ShouldDie
     {
         get { return mLiveTime >= mHitData.lastTime; }
@@ -31,6 +41,7 @@ public class AIHitUnit
         mOwner = owner;
         
         pos = mOwner.transform.TransformPoint(mHitData.startPosition);
+        eulerAngleY = mOwner.transform.eulerAngles.y;
         if (string.IsNullOrEmpty(mHitData.entityResName) == false)
         {
             GameObject prefab = Resources.Load(hitData.entityResName) as GameObject;
@@ -61,7 +72,7 @@ public class AIHitUnit
             }
             else
             {
-                if (ai.CheckHit(mOwner, mHitData))//攻击成功，要记录当前攻击时间
+                if (ai.CheckHit(mOwner,this))//攻击成功，要记录当前攻击时间
                 {
                     if (mHitRecord.ContainsKey(ai))
                     {
@@ -84,12 +95,29 @@ public class AIHitUnit
         }
     }
 
+
+    void DrawGizmos()
+    {
+        if (mHitData!=null)
+        {
+            HitCheckBase hitCheck = mHitData.hitCheckData;
+            if (hitCheck.shapeType == EHitCheckShape.Fan)
+            {
+                Vector3 normal = mOwner.transform.up;
+                Vector3 startVec = Quaternion.AngleAxis(-hitCheck.angle*0.5f, normal)*mOwner.transform.forward;
+                GizmosExtension.DrawFanShapeWithHeight(pos, normal, startVec, hitCheck.angle,hitCheck.radius,hitCheck.height);
+            }
+        }
+    }
+
     public void Destroy()
     {
         if (mHitEntity)
         {
             Object.Destroy(mHitEntity);
         }
+
+        AIMgr.instance.DrawGizmosEvent -= DrawGizmos;
     }
  
 }

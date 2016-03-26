@@ -30,6 +30,10 @@ public class HitCheckBase
     public Vector3 posOffset = Vector3.zero;
     public float radius = 0.5f;
     public float height = 0;
-    
-    
+    /// <summary>
+    /// 角度， 一般只有扇形会用到
+    /// </summary>
+    public float angle = 30;
+
+
 }

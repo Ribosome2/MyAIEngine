@@ -1,9 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Object = UnityEngine.Object;
 
 public class AIMgr :Singleton<AIMgr>
 {
+    public Action DrawGizmosEvent;
     public List<AIUnit> listAIs = new List<AIUnit>();
 
     public AIUnit CreateAI(string resName,int dataId)
@@ -40,6 +43,11 @@ public class AIMgr :Singleton<AIMgr>
         for (int i = 0; i < listAIs.Count; i++)
         {
             listAIs[i].OnDrawGizmos();
+        }
+
+        if (DrawGizmosEvent != null)
+        {
+            DrawGizmosEvent();
         }
     }
     public AIUnit GetMainPlayer()

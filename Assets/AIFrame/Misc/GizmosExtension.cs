@@ -9,24 +9,39 @@ public class GizmosExtension  {
 #if UNITY_EDITOR
         UnityEditor.Handles.DrawWireArc(center,normal,from,angle,radius);
         Vector3 startPoint1 = center + from*radius;
-        Gizmos.DrawLine(center,startPoint1);
+        DrawLine(center,startPoint1);
         Vector3 endDir = Quaternion.AngleAxis(angle, normal)*from;
         Vector3 endPoint1 = center + endDir*radius;
 
-        Gizmos.DrawLine(center,endPoint1);
+        DrawLine(center,endPoint1);
         //上面部分
         Vector3 upperPos = center + normal.normalized*height;
         UnityEditor.Handles.DrawWireArc(upperPos, normal, from, angle, radius);
         Vector3 startPos2 = upperPos + from*radius;
         Vector3 endPoint2 = upperPos + endDir*radius;
 
-        Gizmos.DrawLine(upperPos,startPos2 );
-        Gizmos.DrawLine(upperPos,endPoint2 );
-        Gizmos.DrawLine(startPoint1,startPos2);
-        Gizmos.DrawLine(endPoint1,endPoint2);
-        Gizmos.DrawLine(center,upperPos);
+       DrawLine(upperPos, startPos2);
+       DrawLine(upperPos, endPoint2);
+       DrawLine(startPoint1, startPos2);
+       DrawLine(endPoint1, endPoint2);
+       DrawLine(center, upperPos);
 #endif
 
     }
+
+    public static void DrawLine(Vector3 start, Vector3 end)
+    {
+#if UNITY_EDITOR
+        UnityEditor.Handles.DrawLine(start,end);
+#endif
+    }
+
+    public static void DrawCylinder()
+    {
+#if UNITY_EDITOR
+        //Gizmos.d
+#endif
+    }
+
 
 }
