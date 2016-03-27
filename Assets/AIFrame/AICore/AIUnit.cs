@@ -268,6 +268,7 @@ public class AIUnit : AIBase
     private Vector3 CalculateMoveDelta(float deltaTime)
     {
         Vector3 deltaPos=Vector3.zero;
+        mMoveSpeed = AiGroupData.moveSpeed;
         if (CurAiClip.CheckDirectionInput) //用输入控制
         {
             deltaPos=new Vector3(InputManager.inputVector.x, 0,
@@ -294,9 +295,9 @@ public class AIUnit : AIBase
     public override void OnDrawGizmos()
     {
         base.OnDrawGizmos();
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(Position, Position + relativeForward * 5);
-        Gizmos.DrawLine(Position, Position + relativeRight * 5);
+        //Gizmos.color = Color.green;
+        //Gizmos.DrawLine(Position, Position + relativeForward * 5);
+        //Gizmos.DrawLine(Position, Position + relativeRight * 5);
     }
 
     /// <summary>
@@ -353,7 +354,6 @@ public class AIUnit : AIBase
 
         if (isHit)
         {
-            //todo 编写击中检测算法
             SwitchAIClipByClipKey(mAiClipGroup.commonAnimation.hit);
         }
        

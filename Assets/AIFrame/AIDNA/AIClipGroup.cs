@@ -45,6 +45,10 @@ public class AIClipGroup
     }
 
     public string name="";
+    /// <summary>
+    /// 基础移动速度
+    /// </summary>
+    public float moveSpeed = 6f;
     public AIShape shape=new AIShape();
     public List<AIClip> aiClipList = new List<AIClip>();
     public AICommonAnimation commonAnimation = new AICommonAnimation();
@@ -82,7 +86,7 @@ public class AIShape
 
     public float colliderHeight=1.8f;
     public float colliderRadius=0.5f;
-    public Vector3 colliderOffset=Vector3.zero;
+    public Vector3 colliderOffset=new Vector3(0,0.9f,0);
 
 
     public float hitDetectHeight;

@@ -16,6 +16,8 @@ public class AiClipHitData
     public string entityResName = "";
 
     public Vector3 startPosition;
+    public Vector3 startDirection=new Vector3(0,0,1);
+    public float moveSpeed = 0;
     public HitCheckBase hitCheckData=new HitCheckBase();
     
 }
@@ -28,12 +30,12 @@ public class HitCheckBase
 {
     public EHitCheckShape shapeType = EHitCheckShape.Capsule;
     public Vector3 posOffset = Vector3.zero;
-    public float radius = 0.5f;
-    public float height = 0;
+    public float radius = 1.5f;
+    public float height = 0.5f;
     /// <summary>
     /// 角度， 一般只有扇形会用到
     /// </summary>
-    public float angle = 30;
+    public float angle = 60;
 
 
 }

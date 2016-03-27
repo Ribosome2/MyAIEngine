@@ -35,6 +35,12 @@ public class AIFUIUtility {
             GUILayout.Label("Ai组为空");
             return;
         }
+        if (clipGroup.aiClipList.Count == 0)
+        {
+            GUILayout.Label("片断列表为空");
+            return ;
+        }
+
         GUILayout.BeginHorizontal();
         GUILayout.Label("连接动画名", GUILayout.Width(70));
         string[] optionClips =new string[clipGroup.aiClipList.Count];
@@ -62,6 +68,12 @@ public class AIFUIUtility {
             GUILayout.Label("Ai组为空");
             return"";
         }
+        if (clipGroup.aiClipList.Count == 0)
+        {
+            GUILayout.Label("片断列表为空");
+            return "";
+        }
+
         GUILayout.BeginHorizontal();
         GUILayout.Label(strTip, GUILayout.Width(70));
         string[] optionClips = new string[clipGroup.aiClipList.Count];

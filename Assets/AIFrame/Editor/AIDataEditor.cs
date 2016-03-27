@@ -298,6 +298,7 @@ public class AIDataEditor : EditorWindow {
             {
                 AIClipGroup clipGroup = curSelection.selecteClipGroup;
                 clipGroup.name = AIFUIUtility.DrawTextField(clipGroup.name,"Ai组名称");
+                clipGroup.moveSpeed = EditorGUILayout.FloatField("移动速度", clipGroup.moveSpeed);
                 clipGroup.targetType = (ETargetType)AIFUIUtility.DrawCustomEnum("目标类型", clipGroup.targetType, 100);
                 AIFUIUtility.DrawAIShape(curSelection.selecteClipGroup.shape);
                 AIFUIUtility.DrawCommanAnimation(curSelection.selecteClipGroup.commonAnimation, curSelection.selecteClipGroup);

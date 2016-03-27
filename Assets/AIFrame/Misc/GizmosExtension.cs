@@ -36,10 +36,28 @@ public class GizmosExtension  {
 #endif
     }
 
-    public static void DrawCylinder()
+    public static void DrawCylinder(Vector3 startPoint, Vector3 normal, Vector3 dir, float radius,float height)
     {
 #if UNITY_EDITOR
-        //Gizmos.d
+        normal = normal.normalized;
+        float angle = 360;
+        Vector3 startVec = Quaternion.AngleAxis(-angle*0.5f, normal)*dir;
+        UnityEditor.Handles.DrawSolidArc(startPoint,normal,startVec,angle,radius);
+        Vector3 endPoint = startPoint + normal*height;
+        DrawLine(startPoint,endPoint);
+        UnityEditor.Handles.DrawSolidArc(endPoint, normal, startVec, angle, radius);
+        Vector3[] points=new Vector3[4];
+        Vector3[] pointTops=new Vector3[4];
+        float unitAngle = angle/points.Length;
+        for (int i = 0; i < points.Length; i++)
+        {
+            Vector3 temDir= Quaternion.AngleAxis(-unitAngle*i, normal)*dir;
+
+            points[i] = startPoint + temDir*radius;
+            pointTops[i] = points[i] + normal*height;
+            DrawLine(points[i],pointTops[i]);
+        }
+
 #endif
     }
 

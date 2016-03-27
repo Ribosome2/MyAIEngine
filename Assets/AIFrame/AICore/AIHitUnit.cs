@@ -6,6 +6,7 @@ using System.Collections;
 /// </summary>
 public class AIHitUnit
 {
+    public static bool ShowHitDebug=true;
     public AIHitUnit()
     {
         AIMgr.instance.DrawGizmosEvent += DrawGizmos;
@@ -24,6 +25,8 @@ public class AIHitUnit
     private float mLiveTime;
     private int mCurHitCount;//击中次数
     private float eulerAngleY;
+    private float mMoveSpeed;
+    private Vector3 moveDirection;
 
     public Vector3 forwardDir
     {
@@ -42,13 +45,20 @@ public class AIHitUnit
         
         pos = mOwner.transform.TransformPoint(mHitData.startPosition);
         eulerAngleY = mOwner.transform.eulerAngles.y;
+        moveDirection = mOwner.transform.TransformDirection(mHitData.startDirection).normalized;
+        mMoveSpeed = mHitData.moveSpeed;
         if (string.IsNullOrEmpty(mHitData.entityResName) == false)
         {
             GameObject prefab = Resources.Load(hitData.entityResName) as GameObject;
             if (prefab)
             {
                 mHitEntity = Object.Instantiate(prefab) as GameObject;
+                mHitEntity.transform.forward = moveDirection;
                 mHitEntity.transform.position = pos;
+            }
+            else
+            {
+                Debug.LogError("加载资源"+hitData.entityResName+" 失败");
             }
         }
     }
@@ -91,6 +101,10 @@ public class AIHitUnit
     {
         if (mHitEntity)
         {
+            if (mMoveSpeed > 0)
+            {
+                pos += moveDirection*mMoveSpeed*Time.deltaTime;
+            }
             mHitEntity.transform.position = pos;
         }
     }
@@ -98,14 +112,23 @@ public class AIHitUnit
 
     void DrawGizmos()
     {
+        if (ShowHitDebug == false)
+        {
+            return;
+        }
+
         if (mHitData!=null)
         {
             HitCheckBase hitCheck = mHitData.hitCheckData;
+            Vector3 normal = mOwner.transform.up;
             if (hitCheck.shapeType == EHitCheckShape.Fan)
             {
-                Vector3 normal = mOwner.transform.up;
+                
                 Vector3 startVec = Quaternion.AngleAxis(-hitCheck.angle*0.5f, normal)*mOwner.transform.forward;
                 GizmosExtension.DrawFanShapeWithHeight(pos, normal, startVec, hitCheck.angle,hitCheck.radius,hitCheck.height);
+            }else if (hitCheck.shapeType == EHitCheckShape.Cylinder || hitCheck.shapeType == EHitCheckShape.Capsule)
+            {
+                GizmosExtension.DrawCylinder(pos,normal,forwardDir,hitCheck.radius,hitCheck.radius);
             }
         }
     }
