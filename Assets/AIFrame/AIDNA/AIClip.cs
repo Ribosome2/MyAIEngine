@@ -43,6 +43,9 @@ public class AIClip
     //动画片断时长，秒为单位
     public float animationTime = 1;
 
+    //是否使用动画的移动
+    public bool applyRootMotion=false;
+
     /// <summary>
     /// 向目标靠近
     /// </summary>
@@ -63,8 +66,9 @@ public class AILink
     /// </summary>
     public string linkToClip = "";
     public bool checkAllCondition;
+    public float crossFadeTime=0.1f;
 
-    
+
 }
 
 

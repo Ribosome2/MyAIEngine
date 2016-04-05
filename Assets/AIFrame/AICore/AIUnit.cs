@@ -59,11 +59,14 @@ public class AIUnit : AIBase
 
     public EAiCamp aiCamp { get; set; }
     private AIHitManager mHitManager;
+    private AIEventController mEventController;
+    ExtrenalVelocity mExtrenalVelocity=new ExtrenalVelocity();
     List<AIEventListener> mEventListeners=new List<AIEventListener>();
 
     public AIUnit()
     {
         mHitManager=new AIHitManager(this);
+        mEventController=new AIEventController(this);
     }
 
     public void AddEventListener(AIEventListener listener)
@@ -90,6 +93,16 @@ public class AIUnit : AIBase
             listener.OnEvent(this,type);
         }
     }
+
+    public void NotifyAiUpdate(float dt)
+    {
+        for (int i = 0; i < mEventListeners.Count; i++)
+        {
+            AIEventListener listener = mEventListeners[i];
+            listener.OnUpdateAI(dt);
+        }
+    }
+
     public override void SetModel(GameObject obj)
     {
         base.SetModel(obj);
@@ -109,7 +122,7 @@ public class AIUnit : AIBase
         {
             ChooseMovementAnimation(deltaPos);
         }
-        NotifyEvent(EAiEventType.OnUpdate);
+        NotifyAiUpdate(deltaTime);
     }
 
     public void UpdateShape()
@@ -153,7 +166,7 @@ public class AIUnit : AIBase
         UpdateShape();
     }
 
-    public virtual void SwitchAIClip(AIClip aiClip)
+    public virtual void SwitchAIClip(AIClip aiClip,float fadeTime)
     {
 
         if (aiClip == null)
@@ -165,14 +178,15 @@ public class AIUnit : AIBase
         {
            
             Debug.Log("Switcing to " + aiClip.animationName);
-            PlayAnimation(aiClip.animationName, 0);
+            PlayAnimation(aiClip.animationName, fadeTime);
         }
+        animator.applyRootMotion = aiClip.applyRootMotion;
         mCurAIClip = aiClip;
         NotifyEvent(EAiEventType.SwitchAiClip);
       
     }
 
-    public virtual void SwitchAIClipByClipKey(string  clipKey)
+    public virtual void SwitchAIClipByClipKey(string  clipKey,float fadeTime=0.1f)
     {
         if (CurAiClip != null && CurAiClip.clipKey == clipKey) //当前已经是在目标片断， 不要重复切换
         {
@@ -184,7 +198,7 @@ public class AIUnit : AIBase
         {
             return targetClip.clipKey == clipKey;
         });
-        SwitchAIClip(clip);
+        SwitchAIClip(clip,fadeTime);
         
     }
 
@@ -210,7 +224,7 @@ public class AIUnit : AIBase
             AILink link = mCurAIClip.linkAIClipList[i];
             if (AILinkHelper.IsLinkConditionCheck(link,this))
             {
-                SwitchAIClipByClipKey(link.linkToClip);
+                SwitchAIClipByClipKey(link.linkToClip,link.crossFadeTime);
                 break;
             }
         }
@@ -249,8 +263,8 @@ public class AIUnit : AIBase
     {
         if (UseMecanimAnimation)
         {
-            animator.Play(clipName);
-            //animator.CrossFade(clipName, fadeTime);
+            //animator.Play(clipName);
+            animator.CrossFade(clipName, fadeTime);
         }
         else
         {
@@ -288,7 +302,8 @@ public class AIUnit : AIBase
                 FaceToDirection(deltaPos);
             }
         }
-        deltaPos = (deltaPos + Physics.gravity) * Time.deltaTime;
+        deltaPos = (deltaPos + Physics.gravity) * deltaTime;
+        deltaPos += mExtrenalVelocity.GetMovementByDeltaTime(deltaTime);
         return deltaPos;
     }
 
@@ -324,9 +339,21 @@ public class AIUnit : AIBase
     }
 
 
+  
+
+
+
+
+    public override void Destroy()
+    {
+        base.Destroy();
+        NotifyEvent(EAiEventType.Dead);
+    }
+
+    #region 供外部调用的函数
     public bool CheckHit(AIUnit attacker, AIHitUnit hitUnit)
     {
-        if (AIMgr.IsAntiCamp(attacker, this)==false)
+        if (AIMgr.IsAntiCamp(attacker, this) == false)
         {
             return false;
         }
@@ -335,35 +362,69 @@ public class AIUnit : AIBase
         HitCheckBase hitCheck = hitData.hitCheckData;
         switch (hitData.hitCheckData.shapeType)
         {
-            case EHitCheckShape.Capsule:case EHitCheckShape.Cylinder:
-            {
-                if(MathTool.CheckCylinderHit(hitUnit.pos,hitData.hitCheckData.height,hitData.hitCheckData.radius,Controller))
+            case EHitCheckShape.Capsule:
+            case EHitCheckShape.Cylinder:
                 {
-                    isHit = true;
+                    if (MathTool.CheckCylinderHit(hitUnit.pos, hitData.hitCheckData.height, hitData.hitCheckData.radius, Controller))
+                    {
+                        isHit = true;
+                    }
+                    break;
                 }
-                break;
-            }case EHitCheckShape.Fan:
-            {
-                if(MathTool.CheckFanHit(hitUnit.pos,hitCheck.height,hitCheck.radius,hitCheck.angle,hitUnit.forwardDir,Controller))
+            case EHitCheckShape.Fan:
                 {
-                    isHit = true;
+                    if (MathTool.CheckFanHit(hitUnit.pos, hitCheck.height, hitCheck.radius, hitCheck.angle, hitUnit.forwardDir, Controller))
+                    {
+                        isHit = true;
+                    }
+                    break;
                 }
-                break;
-            }
         }
 
         if (isHit)
         {
             SwitchAIClipByClipKey(mAiClipGroup.commonAnimation.hit);
         }
-       
+
         return isHit;
-        
+
     }
 
-    public override void Destroy()
+    /// <summary>
+    /// 设置相对于自己本身的速度
+    /// </summary>
+    /// <param name="relativeVel"></param>
+    public void SetExtrenalVelocity(Vector3 relativeVel)
     {
-        base.Destroy();
-        NotifyEvent(EAiEventType.Dead);
+        mExtrenalVelocity.SetVelocity(transform.TransformVector(relativeVel));
+    }
+    #endregion
+
+}
+
+/// <summary>
+/// 外部速度，用来增加受力感觉
+/// </summary>
+public class ExtrenalVelocity
+{
+    private Vector3 unitDir;
+    private float magnitude;
+    Vector3 moveDelta=Vector3.zero;
+    public void SetVelocity(Vector3 vel)
+    {
+        unitDir = vel.normalized;
+        magnitude = vel.magnitude;
+    }
+
+    public Vector3 GetMovementByDeltaTime(float dt)
+    {
+         moveDelta=Vector3.zero;
+        if (magnitude >= 0)
+        {
+            moveDelta=unitDir*dt*magnitude;
+            //每次都会衰减速度， 所以这个函数也是应该每次运动都调用的
+            magnitude = Mathf.Max(0, magnitude - dt);
+        }
+        return moveDelta;
     }
 }

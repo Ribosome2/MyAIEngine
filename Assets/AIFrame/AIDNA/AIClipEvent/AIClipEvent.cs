@@ -6,7 +6,8 @@ using System.Collections;
 /// <summary>
 /// Ai片断可以触发的事件
 /// </summary>
-[XmlInclude(typeof(ShowEffectEvent)),XmlInclude(typeof(PlayAudioEvent))]
+[XmlInclude(typeof(ShowEffectEvent)), XmlInclude(typeof(PlayAudioEvent)),
+XmlInclude(typeof(SetVelocityEvent))]
 public abstract class AIClipEvent
 {
 

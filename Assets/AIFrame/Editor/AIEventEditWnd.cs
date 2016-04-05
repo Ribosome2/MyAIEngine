@@ -57,6 +57,10 @@ public class AIEventEditWnd : EditorWindow
         {
             PlayAudioEvent mAudioEvent = mCurEvet as PlayAudioEvent;
             mAudioEvent.audioName = EditorGUILayout.TextField("音效资源名", mAudioEvent.audioName);
+        }else if(mCurEvet is SetVelocityEvent)
+        {
+            SetVelocityEvent velocityEvent = mCurEvet as SetVelocityEvent;
+            velocityEvent.velocity = EditorGUILayout.Vector3Field("设置速度", velocityEvent.velocity);
         }
 
     }
@@ -75,6 +79,11 @@ public class AIEventEditWnd : EditorWindow
         if (GUILayout.Button("播放声音"))
         {
             CreateEvent(new PlayAudioEvent());
+        }
+
+        if (GUILayout.Button("设置相对速度"))
+        {
+            CreateEvent(new SetVelocityEvent());
         }
 
 

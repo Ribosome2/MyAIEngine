@@ -81,12 +81,13 @@ public class AIHitManager:AIEventListener {
               Reset();
               break;
            }
-               case EAiEventType.OnUpdate:
-           {
-              Update();
-               break;
-           }
        }
+   }
+
+
+   public void OnUpdateAI(float deltaTime)
+   {
+       Update();
    }
 }
 

@@ -3,7 +3,6 @@ using System.Collections;
 
 public enum EAiEventType
 {
-    OnUpdate,
     SwitchAiClip,
     Dead,
     HpChange,
@@ -12,5 +11,6 @@ public enum EAiEventType
 public interface AIEventListener
 {
     void OnEvent(AIUnit eventAI,EAiEventType eventType);
+    void OnUpdateAI(float deltaTime);
 
 }

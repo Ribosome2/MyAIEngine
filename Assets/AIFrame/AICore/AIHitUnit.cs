@@ -117,7 +117,7 @@ public class AIHitUnit
             return;
         }
 
-        if (mHitData!=null)
+        if (mHitData!=null &&   mOwner==null &&  mOwner.transform!=null)
         {
             HitCheckBase hitCheck = mHitData.hitCheckData;
             Vector3 normal = mOwner.transform.up;

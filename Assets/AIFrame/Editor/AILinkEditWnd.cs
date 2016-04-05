@@ -29,6 +29,7 @@ public class AILinkEditWnd :EditorWindow
             aiLink.linkToClip = AIFUIUtility.DrawAiLinkPopup(srcGroup, aiLink.linkToClip, "目标片断", 150);
            
             aiLink.checkAllCondition = GUILayout.Toggle(aiLink.checkAllCondition,"检查所有条件");
+            aiLink.crossFadeTime = EditorGUILayout.FloatField("动画过度时间", aiLink.crossFadeTime);
            
             GUILayout.BeginHorizontal();
             GUILayout.Label("连接条件：",GUILayout.Width(150));
