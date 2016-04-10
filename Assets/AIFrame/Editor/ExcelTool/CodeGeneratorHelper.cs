@@ -61,7 +61,7 @@ public static class CodeGeneratorHelper
                 if (convertor.propertyTableMap.ContainsKey(fieldName))
                 {
                     object data = table.Rows[i][j];
-                    Debug.Log(data.ToString());
+                    //Debug.Log(data.ToString());
                     string dataType = convertor.propertyTableMap[fieldName];
                     #region 根据字段类型Encode
                     if (dataType == CommmonVarType.INT16)

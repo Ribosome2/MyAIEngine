@@ -3,6 +3,7 @@ using UnityEngine;
 public class roleInfo: TableData
 {
     public int  ID;
+    public int  AiDataId;
     public string  name;
     public string  resModel;//要加载的模型资源
     public override int Key
@@ -12,6 +13,7 @@ public class roleInfo: TableData
   public override void Decode(byte[] byteArr, ref int bytePos)
    {
         ReadInt32(ref byteArr,ref bytePos,out ID);
+        ReadInt32(ref byteArr,ref bytePos,out AiDataId);
         ReadString(ref byteArr,ref bytePos,out name);
         ReadString(ref byteArr,ref bytePos,out resModel);
   }

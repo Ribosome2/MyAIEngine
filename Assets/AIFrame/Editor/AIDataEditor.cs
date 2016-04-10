@@ -18,8 +18,7 @@ public class AIDataEditor : EditorWindow {
     public Vector2 groupScrollPos = new Vector2();
     public Vector2 conditionListPos = new Vector2();
     public Vector2 selectionScrollPos = new Vector2();
-    public AIDataSelection curSelection=new AIDataSelection();
-
+   
    
 
 
@@ -41,17 +40,7 @@ public class AIDataEditor : EditorWindow {
     {
         int menuWidth = 60;
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("新建AI组", GUILayout.Width(menuWidth)))
-        {
-            AIDataUnitEditWnd wnd = EditorWindow.GetWindow<AIDataUnitEditWnd>();
-            AIDataUnit unit= new AIDataUnit();
-            wnd.SetData(AIDataUnitEditWnd.EditMode.Create, unit, delegate(AIDataUnit data)
-            {
-                CreateAIGroup(data);
-            });
-            
-           
-        }
+        
         if (GUILayout.Button("导入", GUILayout.Width(menuWidth)))
         {
             LoadDataFromFile(true);
@@ -85,6 +74,15 @@ public class AIDataEditor : EditorWindow {
     /// </summary>
     void DrawAIUnits()
     {
+        if (GUILayout.Button("新建AI组", GUILayout.Width(60)))
+        {
+            AIDataUnitEditWnd wnd = EditorWindow.GetWindow<AIDataUnitEditWnd>();
+            AIDataUnit unit = new AIDataUnit();
+            wnd.SetData(AIDataUnitEditWnd.EditMode.Create, unit, delegate(AIDataUnit data)
+            {
+                CreateAIGroup(data);
+            });
+        }
         groupScrollPos = GUILayout.BeginScrollView(groupScrollPos, false, true, GUILayout.Width(400), GUILayout.Height(position.height * 0.9f));
         for (int i = 0; i < listUIGroups.Count; i++)
         {
@@ -95,10 +93,10 @@ public class AIDataEditor : EditorWindow {
                 uiGroup.bExpand =! uiGroup.bExpand;
             }
             Color prevColor = GUI.color;
-            GUI.color = uiGroup == curSelection.selectedUnit ? Color.yellow : prevColor;
+            GUI.color = uiGroup == AIDataSelection.selectedUnit ? Color.yellow : prevColor;
             if(GUILayout.Button(uiGroup.Name,GUILayout.Width(200)))
             {
-                curSelection.SelectAIDataUnit(uiGroup);
+                AIDataSelection.SelectAIDataUnit(uiGroup);
             }
             GUI.color = prevColor;
             if (GUILayout.Button("添加", GUILayout.Width(40)))
@@ -140,9 +138,9 @@ public class AIDataEditor : EditorWindow {
                 groupUnit.SetChildExpand(groupIndex, !expandGroup);
             }
            
-            if (AIFUIUtility.LayoutButtonWithColor(clipGroup.GroupName,clipGroup==curSelection.selecteClipGroup?Color.magenta:GUI.color,170))
+            if (AIFUIUtility.LayoutButtonWithColor(clipGroup.GroupName,clipGroup==AIDataSelection.selecteClipGroup?Color.magenta:GUI.color,170))
             {
-                curSelection.SelectAIGroup(clipGroup);
+                AIDataSelection.SelectAIGroup(clipGroup);
             }
 
             if (GUILayout.Button("Add", GUILayout.Width(45)))
@@ -185,13 +183,13 @@ public class AIDataEditor : EditorWindow {
                         AIClip clip = clipGroup.aiClipList[i];
                         GUILayout.BeginHorizontal();
                         GUILayout.Space(indentSpace);
-                        Color col = curSelection.selectedAiClip == clip ? Color.green : GUI.color;
+                        Color col = AIDataSelection.selectedAiClip == clip ? Color.green : GUI.color;
                         if (AIFUIUtility.LayoutButtonWithColor(clip.NameOnUI,col,AIFGUISKin.GetStyle("button"),GUILayout.Width(150)))
                         {
-                            curSelection.SelectAIDataUnit(groupUnit);
-                            curSelection.SelectAIClip(clip);
+                            AIDataSelection.SelectAIDataUnit(groupUnit);
+                            AIDataSelection.SelectAIClip(clip);
                         }
-                        if (clip == curSelection.selectedAiClip)
+                        if (clip == AIDataSelection.selectedAiClip)
                         {
                         }
                         if (GUILayout.Button("X", GUILayout.Width(30)))
@@ -219,8 +217,8 @@ public class AIDataEditor : EditorWindow {
         //selectionScrollPos = GUILayout.BeginScrollView(selectionScrollPos, true, true, GUILayout.Width(400), GUILayout.Height(position.height * 0.9f));
 
         GUILayout.Label("当前选中");
-        AIClip selectedClip = curSelection.selectedAiClip;
-        AIClipGroup selectedGroup = curSelection.selecteClipGroup;
+        AIClip selectedClip =AIDataSelection.selectedAiClip;
+        AIClipGroup selectedGroup = AIDataSelection.selecteClipGroup;
         if (selectedClip != null)
         {
             AIFUIUtility.DrawAIClip(selectedClip,selectedGroup);
@@ -231,7 +229,7 @@ public class AIDataEditor : EditorWindow {
                 AILink link = new AILink();
                 selectedClip.linkAIClipList.Add(link);
                 AILinkEditWnd wnd = EditorWindow.GetWindow<AILinkEditWnd>();
-                wnd.SetData(curSelection.selecteClipGroup,link);
+                wnd.SetData(AIDataSelection.selecteClipGroup,link);
             }
             GUILayout.EndHorizontal();
 
@@ -255,9 +253,9 @@ public class AIDataEditor : EditorWindow {
                     AILink ai = selectedClip.linkAIClipList[i];
                     GUILayout.BeginHorizontal();
                     //string fullClipName=
-                    if (AIFUIUtility.LayoutButtonWithColor(ai.linkToClip, curSelection.IsSelectedLinkClip(ai) ? Color.cyan : Color.magenta, 150))
+                    if (AIFUIUtility.LayoutButtonWithColor(ai.linkToClip, AIDataSelection.IsSelectedLinkClip(ai) ? Color.cyan : Color.magenta, 150))
                     {
-                        curSelection.SelectLinkClip(ai);
+                        AIDataSelection.SelectLinkClip(ai);
                         AILinkEditWnd.EditAILink(selectedGroup, ai);
                     }
                     if (GUILayout.Button("X", GUILayout.Width(20)))
@@ -294,18 +292,18 @@ public class AIDataEditor : EditorWindow {
         }
         else  //没选中AI片断就检测时候在编辑AI组
         {
-            if (curSelection.selecteClipGroup != null)
+            if (AIDataSelection.selecteClipGroup != null)
             {
-                AIClipGroup clipGroup = curSelection.selecteClipGroup;
+                AIClipGroup clipGroup = AIDataSelection.selecteClipGroup;
                 clipGroup.name = AIFUIUtility.DrawTextField(clipGroup.name,"Ai组名称");
                 clipGroup.moveSpeed = EditorGUILayout.FloatField("移动速度", clipGroup.moveSpeed);
                 clipGroup.targetType = (ETargetType)AIFUIUtility.DrawCustomEnum("目标类型", clipGroup.targetType, 100);
-                AIFUIUtility.DrawAIShape(curSelection.selecteClipGroup.shape);
-                AIFUIUtility.DrawCommanAnimation(curSelection.selecteClipGroup.commonAnimation, curSelection.selecteClipGroup);
+                AIFUIUtility.DrawAIShape(AIDataSelection.selecteClipGroup.shape);
+                AIFUIUtility.DrawCommanAnimation(AIDataSelection.selecteClipGroup.commonAnimation, AIDataSelection.selecteClipGroup);
             }
-            else if (curSelection.selectedUnit != null)
+            else if (AIDataSelection.selectedUnit != null)
             {
-                curSelection.selectedUnit.aiData.AiName = AIFUIUtility.DrawTextField(curSelection.selectedUnit.aiData.AiName, "AI单位名称");
+                AIDataSelection.selectedUnit.aiData.AiName = AIFUIUtility.DrawTextField(AIDataSelection.selectedUnit.aiData.AiName, "AI单位名称");
                 //
             }
         }
@@ -353,7 +351,7 @@ public class AIDataEditor : EditorWindow {
         aiDataSet.aiDataList.Add(unit);
         UIAIDataUnit uiGroup = new UIAIDataUnit(unit);
         listUIGroups.Add(uiGroup);
-        curSelection.SelectAIDataUnit(uiGroup);
+        AIDataSelection.SelectAIDataUnit(uiGroup);
         Repaint();
     }
 
@@ -361,7 +359,7 @@ public class AIDataEditor : EditorWindow {
     {
         UIAIDataUnit uiGroup = new UIAIDataUnit(aiData);
         listUIGroups.Add(uiGroup);
-        curSelection.SelectAIDataUnit(uiGroup);
+        AIDataSelection.SelectAIDataUnit(uiGroup);
         Repaint();
     }
 
@@ -513,11 +511,11 @@ public class AIDataEditor : EditorWindow {
             //这里为了和内置的Ctrl C  CtrlV 冲突，我们用Shift
             if (curEvent.keyCode == KeyCode.C && curEvent.shift) //复制
             {
-                curSelection.CopySelection();
+                AIDataSelection.CopySelection();
             }
             else if (curEvent.keyCode == KeyCode.V && curEvent.shift) //粘贴
             {
-                curSelection.PasteCopyData();
+                AIDataSelection.PasteCopyData();
             }
             
         }
@@ -573,23 +571,25 @@ public class UIAIDataUnit
 /// <summary>
 /// 记录当前选中数据
 /// </summary>
-public class AIDataSelection
+public static class AIDataSelection
 {
-    public  UIAIDataUnit selectedUnit;
-    public  AIClip selectedAiClip;
-    public AIDataUnit selectedDataUnit;
-    public AIClipGroup selecteClipGroup;
+    public static  UIAIDataUnit selectedUnit;
+    public static   AIClip selectedAiClip;
+    public static AIDataUnit selectedDataUnit;
+    public static AIClipGroup selecteClipGroup;
+    public static AiClipHitData selectedHitData;
+    public static AIClipEvent aiEvent;
     /// <summary>
     /// 和选中AI组中选中AI片断连接的片断
     /// </summary>
-    private AILink mSelectedLink;
+    private static  AILink mSelectedLink;
 
-    public AILink SelectedLink
+    public static AILink SelectedLink
     {
         get { return mSelectedLink; }
     }
 
-    public void SelectAIDataUnit(UIAIDataUnit groupUI)
+    public static  void SelectAIDataUnit(UIAIDataUnit groupUI)
     {
         if (selectedUnit != groupUI)
         {
@@ -602,7 +602,7 @@ public class AIDataSelection
         selecteClipGroup = null;
     }
 
-    public void SelectAIGroup(AIClipGroup group)
+    public static void SelectAIGroup(AIClipGroup group)
     {
         if (selecteClipGroup != group)
         {
@@ -614,7 +614,7 @@ public class AIDataSelection
     }
 
 
-    public void SelectAIClip(AIClip aiClip)
+    public static void SelectAIClip(AIClip aiClip)
     {
         if (selectedAiClip != aiClip)
         {
@@ -622,10 +622,12 @@ public class AIDataSelection
             //要保证选择AI片断后自动选择这个片断所在的AI组
             selecteClipGroup = FindOwnerClipGroup(aiClip);
             mSelectedLink = null;
+            selectedHitData = null;
+            aiEvent = null;
         }
     }
 
-    public void SelectLinkClip(AILink link)
+    public static void SelectLinkClip(AILink link)
     {
         if (link != mSelectedLink)
         {
@@ -640,7 +642,17 @@ public class AIDataSelection
         }
     }
 
-    public bool IsSelectedLinkClip(AILink clip)
+    public static void SelectedHitData(AiClipHitData hitData)
+    {
+        selectedHitData = hitData;
+    }
+
+    public static void SelectedAIEvent(AIClipEvent clipEvent)
+    {
+        aiEvent = clipEvent;
+    }
+
+    public static  bool IsSelectedLinkClip(AILink clip)
     {
         return mSelectedLink != null && mSelectedLink == clip;
     }
@@ -650,7 +662,7 @@ public class AIDataSelection
     /// </summary>
     /// <param name="clip"></param>
     /// <returns></returns>
-    public AIClipGroup FindOwnerClipGroup(AIClip clip)
+    public static AIClipGroup FindOwnerClipGroup(AIClip clip)
     {
         for (int i = 0; i < AIDataEditor.aiDataSet.aiDataList.Count; i++)
         {
@@ -671,7 +683,7 @@ public class AIDataSelection
     /// <summary>
     /// 复制选中
     /// </summary>
-    public void CopySelection()
+    public static void CopySelection()
     {
         if (selectedAiClip != null)
         {
@@ -688,7 +700,7 @@ public class AIDataSelection
     /// <summary>
     /// 粘贴之前复制的数据到当前选择
     /// </summary>
-    public void PasteCopyData()
+    public static void PasteCopyData()
     {
         object clipBoardObj;
         CustomClipBoard.GetCopyObject(out clipBoardObj);

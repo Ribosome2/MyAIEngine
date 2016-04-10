@@ -42,11 +42,15 @@ public class AIHitUnit
     {
         mHitData = hitData;
         mOwner = owner;
-        
+        if (mHitData.autoFaceTarget)
+        {
+            mOwner.FaceToAttackTarget();
+        }
         pos = mOwner.transform.TransformPoint(mHitData.startPosition);
         eulerAngleY = mOwner.transform.eulerAngles.y;
         moveDirection = mOwner.transform.TransformDirection(mHitData.startDirection).normalized;
         mMoveSpeed = mHitData.moveSpeed;
+       
         if (string.IsNullOrEmpty(mHitData.entityResName) == false)
         {
             GameObject prefab = Resources.Load(hitData.entityResName) as GameObject;

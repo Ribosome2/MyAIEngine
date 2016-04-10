@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SocialPlatforms;
 
 /// <summary>
 /// 继承AIBase 的基本物体属性， 同时这一层开始有多些外观表现，比如有它的父类没有的动画
@@ -62,7 +63,7 @@ public class AIUnit : AIBase
     private AIEventController mEventController;
     ExtrenalVelocity mExtrenalVelocity=new ExtrenalVelocity();
     List<AIEventListener> mEventListeners=new List<AIEventListener>();
-
+    private string curAnimationName="";
     public AIUnit()
     {
         mHitManager=new AIHitManager(this);
@@ -261,8 +262,10 @@ public class AIUnit : AIBase
     /// <param name="fadeTime">过度时间</param>
     public virtual void PlayAnimation(string clipName, float fadeTime)
     {
+        curAnimationName = clipName;
         if (UseMecanimAnimation)
         {
+            //用CrossFade方法好像有时切换不到目标片断，好烦，
             //animator.Play(clipName);
             animator.CrossFade(clipName, fadeTime);
         }
@@ -270,6 +273,22 @@ public class AIUnit : AIBase
         {
             mAnimation.CrossFade(clipName, fadeTime);
         }
+    }
+
+    /// <summary>
+    /// 如果当前有攻击目标，转向攻击目标
+    /// </summary>
+    public void FaceToAttackTarget()
+    {
+        AIUnit target = AIMgr.instance.FindFirstEnemy(this);
+        if (target != null)
+        {
+            Vector3 dir = target.Position - Position;
+            Vector3 dirWitoutY = new Vector3(dir.x, 0, dir.z).normalized;
+
+            transform.rotation = Quaternion.LookRotation(dirWitoutY);
+        }
+       
     }
 
     public void FaceToDirection(Vector3 dir)

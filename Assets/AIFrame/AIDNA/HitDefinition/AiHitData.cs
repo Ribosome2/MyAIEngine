@@ -18,8 +18,13 @@ public class AiClipHitData
     public Vector3 startPosition;
     public Vector3 startDirection=new Vector3(0,0,1);
     public float moveSpeed = 0;
+    /// <summary>
+    /// 是否自动面向攻击目标
+    /// </summary>
+    public bool autoFaceTarget = false;//
     public HitCheckBase hitCheckData=new HitCheckBase();
-    
+   
+
 }
 
 

@@ -41,51 +41,51 @@ public abstract class TableData
     public abstract int Key { get; }
     const int INT32_LENGTH = 4;
     const int INT64_LENGTH = 8;
-    private const int SHORT16_LEN = 2;
+    const int SHORT16_LEN = 2;
 
     public abstract void Decode(byte[] byteArr, ref int bytePos);
   
 
-    protected void ReadUShort(ref byte[] byteArray ,ref int mByteOffset,out ushort outputValue)
+    protected static void ReadUShort(ref byte[] byteArray ,ref int mByteOffset,out ushort outputValue)
     {
         outputValue = BitConverter.ToUInt16(byteArray, mByteOffset);
         mByteOffset += SHORT16_LEN;
     }
 
-    protected void ReadShort(ref byte[] byteArray, ref int mByteOffset, out short outputValue)
+    protected static void ReadShort(ref byte[] byteArray, ref int mByteOffset, out short outputValue)
     {
         outputValue = BitConverter.ToInt16(byteArray, mByteOffset);
         mByteOffset += SHORT16_LEN;
     }
 
-    protected void ReadInt32(ref byte[] byteArray, ref int mByteOffset, out int outputValue)
+    protected static void ReadInt32(ref byte[] byteArray, ref int mByteOffset, out int outputValue)
     {
         outputValue = BitConverter.ToInt32(byteArray, mByteOffset);
         mByteOffset += INT32_LENGTH;
     }
-    protected void ReadUInt32(ref byte[] byteArray, ref int mByteOffset, out uint outputValue)
+    protected static void ReadUInt32(ref byte[] byteArray, ref int mByteOffset, out uint outputValue)
     {
         outputValue = BitConverter.ToUInt32(byteArray, mByteOffset);
         mByteOffset += INT32_LENGTH;
     }
 
-    protected void ReadInt64(ref byte[] byteArray, ref int mByteOffset, out long outputValue)
+    protected static void ReadInt64(ref byte[] byteArray, ref int mByteOffset, out long outputValue)
     {
         outputValue = BitConverter.ToInt32(byteArray, mByteOffset);
         mByteOffset += INT64_LENGTH;
     }
-    protected void ReadUInt64(ref byte[] byteArray, ref int mByteOffset, out ulong outputValue)
+    protected static void ReadUInt64(ref byte[] byteArray, ref int mByteOffset, out ulong outputValue)
     {
         outputValue = BitConverter.ToUInt32(byteArray, mByteOffset);
         mByteOffset += INT32_LENGTH;
     }
 
-    protected void ReadInt8(ref byte[] byteArray, ref int mByteOffset, out byte outputValue)
+    protected static void ReadInt8(ref byte[] byteArray, ref int mByteOffset, out byte outputValue)
     {
         outputValue = byteArray[mByteOffset];
         mByteOffset += 1;
     }
-    protected void ReadString(ref byte[] byteArray, ref int mByteOffset, out string str)
+    protected static void ReadString(ref byte[] byteArray, ref int mByteOffset, out string str)
     {
         ushort len;
         ReadUShort(ref  byteArray, ref  mByteOffset,out len);

@@ -170,9 +170,36 @@ public class AIFUIUtility {
     public static void DrawAiEvetList(AIClip clip)
     {
         GUILayout.BeginHorizontal();
-        GUILayout.Label("事件列表", GUILayout.Width(100));
+        GUILayout.Label("事件列表", GUILayout.Width(60));
+        #region copy and paste icons
+        if (GUILayout.Button(AIFGUISKin.IconCopy, GUILayout.Width(30), GUILayout.Height(30)))
+        {
+            if (AIDataSelection.aiEvent != null)
+            {
+                CustomClipBoard.CopyData(AIDataSelection.aiEvent);
+            }
+        }
+        if (GUILayout.Button(AIFGUISKin.IconPaste, GUILayout.Width(30), GUILayout.Height(30)))
+        {
+            object clipBoardObj;
+            CustomClipBoard.GetCopyObject(out clipBoardObj);
+            if (clipBoardObj == null)
+            {
+                Debug.LogError("剪切板没有内容可以粘贴");
+            }
+            else
+            {
+                clipBoardObj = Utility.XmlDeepCloneObject(clipBoardObj);
 
-        if (GUILayout.Button("add", GUILayout.Width(40)))
+                if (clipBoardObj is AIClipEvent)
+                {
+                    clip.AiClipEvents.Add(clipBoardObj as AIClipEvent);
+                }
+
+            }
+        }
+        #endregion
+        if (GUILayout.Button(AIFGUISKin.IconNewItem, GUILayout.Width(30),GUILayout.Height(30)))
         {
             AIEventEditWnd.OpenCreateEditor(delegate(AIClipEvent e)
             {
@@ -190,8 +217,10 @@ public class AIFUIUtility {
             {
                 AIClipEvent evet = clip.AiClipEvents[i];
                 GUILayout.BeginHorizontal();
-                if (GUILayout.Button(evet.eventName, GUILayout.Width(150)))
+                Color col = AIDataSelection.aiEvent == evet ? Color.green : GUI.color;
+                if (AIFUIUtility.LayoutButtonWithColor(evet.eventName, col, 150)) 
                 {
+                    AIDataSelection.SelectedAIEvent(evet);
                     AIEventEditWnd.OpenAsEditMode(evet);
                 }
                 if(GUILayout.Button("X",GUILayout.Width(30)))
@@ -216,18 +245,50 @@ public class AIFUIUtility {
     public static void DrawHitDefinitionList(AIClip clip)
     {
         GUILayout.BeginHorizontal();
-        GUILayout.Label("攻击定义列表",GUILayout.Width(100));
-        if(GUILayout.Button("Add",GUILayout.Width(40)))
+        GUILayout.Label("攻击定义列表:",GUILayout.Width(80));
+        #region copy and paste icons
+        if (GUILayout.Button(AIFGUISKin.IconCopy, GUILayout.Width(30), GUILayout.Height(30)))
+        {
+            if (AIDataSelection.selectedHitData != null)
+            {
+                CustomClipBoard.CopyData(AIDataSelection.selectedHitData);
+            }
+        }
+        if (GUILayout.Button(AIFGUISKin.IconPaste, GUILayout.Width(30), GUILayout.Height(30)))
+        {
+            object clipBoardObj;
+            CustomClipBoard.GetCopyObject(out clipBoardObj);
+            if (clipBoardObj == null)
+            {
+                Debug.LogError("剪切板没有内容可以粘贴");
+            }
+            else
+            {
+                clipBoardObj = Utility.XmlDeepCloneObject(clipBoardObj);
+
+                if (clipBoardObj is AiClipHitData)
+                {
+                    clip.hitCheckList.Add(clipBoardObj as AiClipHitData);
+                }
+
+            }
+        }
+        #endregion
+        if(GUILayout.Button(AIFGUISKin.IconNewItem,GUILayout.Width(30),GUILayout.Height(30)))
         {
             clip.hitCheckList.Add(new AiClipHitData());
         }
+
+       
         GUILayout.EndHorizontal();
         for (int i = 0; i < clip.hitCheckList.Count; i++)
         {
             AiClipHitData hitCheck = clip.hitCheckList[i];
             GUILayout.BeginHorizontal();
-            if(GUILayout.Button(hitCheck.name,GUILayout.Width(150)))
+            Color col = hitCheck == AIDataSelection.selectedHitData?Color.green:GUI.color;
+            if(AIFUIUtility.LayoutButtonWithColor(hitCheck.name,col,150))
             {
+                AIDataSelection.SelectedHitData(hitCheck);
                 HitDataEditWnd.Open(hitCheck);
             }
             if(GUILayout.Button("X",GUILayout.Width(40)))

@@ -39,6 +39,7 @@ public class HitDataEditWnd : EditorWindow {
             mHitData.startPosition = EditorGUILayout.Vector3Field("初始位置", mHitData.startPosition);
             mHitData.startDirection = EditorGUILayout.Vector3Field("初始角度", mHitData.startDirection);
             mHitData.moveSpeed = EditorGUILayout.FloatField("移动速度", mHitData.moveSpeed);
+            mHitData.autoFaceTarget = EditorGUILayout.Toggle("自动朝向攻击目标", mHitData.autoFaceTarget);
 
             EditorGUILayout.Separator();
             GUILayout.Label("击中判定：");

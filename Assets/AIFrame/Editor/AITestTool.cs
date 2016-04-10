@@ -1,4 +1,5 @@
-﻿using System.Runtime.Remoting.Services;
+﻿using System.IO;
+using System.Runtime.Remoting.Services;
 using UnityEngine;
 using System.Collections;
 using UnityEditor;
@@ -7,12 +8,20 @@ public class AITestWnd : EditorWindow {
 	static void Start ()
     {
         AITestWnd wnd = EditorWindow.GetWindow<AITestWnd>();
+        LoadAiTable();
+    }
+
+    private static void LoadAiTable()
+    {
+        byte[] bytes = File.ReadAllBytes(Application.dataPath + "/AIFrame/Resources/roleInfo.kiss");
+        roleInfoTableManager.instance.LoadData(bytes);
     }
 
     private string aiModelName="Knight100";
     private int aiDataId =1000;
     public EAiCamp createCamp;
     private bool createAsAI;
+    private Vector2 scrollPos;
 
     void OnGUI() 
     {
@@ -20,6 +29,10 @@ public class AITestWnd : EditorWindow {
         if (GUILayout.Button("Load File New"))
         {
             AIDataMgr.instance.LoadNewData();
+        }
+        if (GUILayout.Button("重新加载AI配置表"))
+        {
+            LoadAiTable();
         }
         if(GUILayout.Button("ClearAllAI",GUILayout.Width(100)))
         {
@@ -50,6 +63,25 @@ public class AITestWnd : EditorWindow {
             CreateAI(aiModelName, aiDataId, EAiCamp.Enemy, true);
         }
         GUILayout.EndHorizontal();
+        GUILayout.Label("创建列表");
+        GUILayout.BeginScrollView(scrollPos);
+        for (int i = 0; i < roleInfoTableManager.instance.Size(); i++)
+        {
+            roleInfo info = roleInfoTableManager.instance.GetByIndex(i);
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(info.ID + "/" + info.AiDataId + "/" + info.name,GUILayout.Width(200));
+            if (GUILayout.Button("创建为主角"))
+            {
+                CreateAI(info.resModel, info.AiDataId, EAiCamp.MainPlayer, false);
+            }
+
+            if (GUILayout.Button("创建为敌方"))
+            {
+                CreateAI(info.resModel, info.AiDataId, EAiCamp.Enemy, true);
+            }
+            GUILayout.EndHorizontal();
+        }
+        GUILayout.EndScrollView();
 
 
     }
