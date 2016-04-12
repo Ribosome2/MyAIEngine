@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEditor;
 public class AITestWnd : EditorWindow {
-    [MenuItem("AIFrame/Open/TestTool")]
+    [MenuItem("AIFrame/Open/TestTool #&g")]
 	static void Start ()
     {
         AITestWnd wnd = EditorWindow.GetWindow<AITestWnd>();
@@ -74,7 +74,10 @@ public class AITestWnd : EditorWindow {
             {
                 CreateAI(info.resModel, info.AiDataId, EAiCamp.MainPlayer, false);
             }
-
+            if (GUILayout.Button("创建为友方"))
+            {
+                CreateAI(info.resModel, info.AiDataId, EAiCamp.Friend, true);
+            }
             if (GUILayout.Button("创建为敌方"))
             {
                 CreateAI(info.resModel, info.AiDataId, EAiCamp.Enemy, true);

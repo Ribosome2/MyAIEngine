@@ -35,10 +35,38 @@ public class AIEventController:AIEventListener {
         {
             SetVelocityEvent velocityEvent = clipEvent as SetVelocityEvent;
             mOwner.SetExtrenalVelocity(velocityEvent.velocity);
+        }else if (clipEvent is ShowEffectEvent)
+        {
+            ShowEffectEvent effectEvent = clipEvent as ShowEffectEvent;
+            Object obj= Resources.Load(effectEvent.effectName);
+            if (obj)
+            {
+                Vector3 pos = mOwner.transform.TransformPoint(effectEvent.startPosition);
+                Object.Instantiate(obj, pos, Quaternion.identity);
+            }
+        }else if (clipEvent is AiActionEvent)
+        {
+            ConductAIAction(clipEvent as AiActionEvent);
         }
         else
         {
             Debug.LogError("未实现的事件类型"+clipEvent);
+        }
+    }
+
+    void ConductAIAction(AiActionEvent actionEvent)
+    {
+        switch (actionEvent.actiomType)
+        {
+             case EAiActionType.FaceTarget:
+            {
+                mOwner.FaceToAttackTarget();
+                break;
+            }default:
+            {
+                Debug.LogError("没有实现的AI动作"+actionEvent);
+                break;
+            }
         }
     }
 

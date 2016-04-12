@@ -7,20 +7,34 @@ using System.Collections;
 using System.IO;
 using System.Text;
 public class AIDataEditor : EditorWindow {
-    [MenuItem("AIFrame/Open/DataEditor")]
+    [MenuItem("AIFrame/Open/DataEditor #&o")]
     public static void OpenWindow()
     {
         EditorWindow.GetWindow<AIDataEditor>();
     }
-    
+    bool locked = false;
+
+    private GUIStyle m_IconStyle = new GUIStyle();
+ 
     public static  List<UIAIDataUnit> listUIGroups = new List<UIAIDataUnit>();
     public static  AIDataSet aiDataSet = new AIDataSet();  //可编辑的所有AI集合
     public Vector2 groupScrollPos = new Vector2();
     public Vector2 conditionListPos = new Vector2();
     public Vector2 selectionScrollPos = new Vector2();
-   
-   
 
+    private void OnEnable()
+    {
+        Texture2D icon = Resources.Load<Texture2D>("Icons/icon");
+        m_IconStyle.normal.background = icon;
+        title = "AIF编辑器";
+
+    }
+    void ShowButton(Rect rect)
+    {
+        locked = GUI.Toggle(rect, locked, GUIContent.none, "IN LockButton");
+        rect.x -=position.width- 140.0f;
+        GUI.Button(new Rect(rect.x, rect.y-10, 25, 25), GUIContent.none, m_IconStyle);
+    }
 
     void Start()
     {

@@ -164,6 +164,7 @@ public class AIUnit : AIBase
     {
         mAiClipGroup = groupData;
         mCurAIClip = mAiClipGroup.aiClipList[0];
+        SwitchAIClip(mCurAIClip,0);
         UpdateShape();
     }
 
@@ -175,7 +176,7 @@ public class AIUnit : AIBase
             Debug.LogError("不能设置空数据");
             return;
         }
-        if (mCurAIClip.animationName != aiClip.animationName)
+        if (curAnimationName != aiClip.animationName)
         {
            
             Debug.Log("Switcing to " + aiClip.animationName);
@@ -266,8 +267,8 @@ public class AIUnit : AIBase
         if (UseMecanimAnimation)
         {
             //用CrossFade方法好像有时切换不到目标片断，好烦，
-            //animator.Play(clipName);
-            animator.CrossFade(clipName, fadeTime);
+            animator.Play(clipName);
+           // animator.CrossFade(clipName, fadeTime);
         }
         else
         {

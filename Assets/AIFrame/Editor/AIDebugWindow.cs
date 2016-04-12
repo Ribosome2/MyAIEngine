@@ -48,6 +48,7 @@ public class AIDebugWindow : EditorWindow {
         GUILayout.Label(tarUnit.AiGroupData.GroupName);
         GUILayout.Label("动画名"+tarUnit.CurAiClip.animationName);
         GUILayout.Label("默认连接"+tarUnit.CurAiClip.defaultLinkClip);
+        GUILayout.Label("动画状态停留时长"+tarUnit.CurClipTime);
         GUILayout.Label("Check input"+tarUnit.CurAiClip.CheckDirectionInput);
         GUILayout.Label("Camp:"+tarUnit.aiCamp);
     }

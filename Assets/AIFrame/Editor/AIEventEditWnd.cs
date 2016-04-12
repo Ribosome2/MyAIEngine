@@ -53,6 +53,7 @@ public class AIEventEditWnd : EditorWindow
         {
             ShowEffectEvent effectEvent = (ShowEffectEvent) mCurEvet;
             effectEvent.effectName=EditorGUILayout.TextField("特效资源名",effectEvent.effectName);
+            effectEvent.startPosition = EditorGUILayout.Vector3Field("初始位置", effectEvent.startPosition);
         }else if (mCurEvet is PlayAudioEvent)
         {
             PlayAudioEvent mAudioEvent = mCurEvet as PlayAudioEvent;
@@ -61,6 +62,10 @@ public class AIEventEditWnd : EditorWindow
         {
             SetVelocityEvent velocityEvent = mCurEvet as SetVelocityEvent;
             velocityEvent.velocity = EditorGUILayout.Vector3Field("设置速度", velocityEvent.velocity);
+        }else if (mCurEvet is AiActionEvent)
+        {
+            AiActionEvent actionEvent = mCurEvet as AiActionEvent;
+            actionEvent.actiomType = (EAiActionType) EditorGUILayout.EnumPopup("AI行为类型", actionEvent.actiomType);
         }
 
     }
@@ -84,6 +89,11 @@ public class AIEventEditWnd : EditorWindow
         if (GUILayout.Button("设置相对速度"))
         {
             CreateEvent(new SetVelocityEvent());
+        }
+
+        if (GUILayout.Button("执行AI行为"))
+        {
+            CreateEvent(new AiActionEvent());
         }
 
 

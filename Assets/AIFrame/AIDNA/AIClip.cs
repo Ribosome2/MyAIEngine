@@ -9,7 +9,7 @@ public class AIClip
 {
     public string NameOnUI
     {
-        get { return string.Format(string.Format("{0}_{1}_{2}",clipKey, animationName, name)); }
+        get { return string.Format(string.Format("{0}_{1}",clipKey, name)); }
     }
 
     public string name = "";
