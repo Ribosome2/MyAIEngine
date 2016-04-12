@@ -29,12 +29,9 @@ public class AIDataEditor : EditorWindow {
         title = "AIF编辑器";
 
     }
-    void ShowButton(Rect rect)
-    {
-        locked = GUI.Toggle(rect, locked, GUIContent.none, "IN LockButton");
-        rect.x -=position.width- 140.0f;
-        GUI.Button(new Rect(rect.x, rect.y-10, 25, 25), GUIContent.none, m_IconStyle);
-    }
+    
+
+
 
     void Start()
     {
@@ -44,10 +41,12 @@ public class AIDataEditor : EditorWindow {
 
     void OnGUI()
     {
+        
         DrawMenus();
         DrawAIUnits();
         DrawSelectedAiClipOrGroup();
         HandleKeyboardShortCut();
+        GUI.Button(new Rect(position.width - 60, 10, 50, 50), GUIContent.none, m_IconStyle);
     }
 
     void DrawMenus()
@@ -309,15 +308,16 @@ public class AIDataEditor : EditorWindow {
             if (AIDataSelection.selecteClipGroup != null)
             {
                 AIClipGroup clipGroup = AIDataSelection.selecteClipGroup;
-                clipGroup.name = AIFUIUtility.DrawTextField(clipGroup.name,"Ai组名称");
-                clipGroup.moveSpeed = EditorGUILayout.FloatField("移动速度", clipGroup.moveSpeed);
-                clipGroup.targetType = (ETargetType)AIFUIUtility.DrawCustomEnum("目标类型", clipGroup.targetType, 100);
+                clipGroup.name = EditorGUILayout.TextField("Ai组名称",clipGroup.name,GUILayout.Width(300));
+                clipGroup.moveSpeed = EditorGUILayout.FloatField("移动速度", clipGroup.moveSpeed,GUILayout.Width(300));
+                clipGroup.targetType = (ETargetType)EditorGUILayout.EnumPopup("目标类型", clipGroup.targetType,GUILayout.Width(300));
                 AIFUIUtility.DrawAIShape(AIDataSelection.selecteClipGroup.shape);
                 AIFUIUtility.DrawCommanAnimation(AIDataSelection.selecteClipGroup.commonAnimation, AIDataSelection.selecteClipGroup);
             }
             else if (AIDataSelection.selectedUnit != null)
             {
-                AIDataSelection.selectedUnit.aiData.AiName = AIFUIUtility.DrawTextField(AIDataSelection.selectedUnit.aiData.AiName, "AI单位名称");
+                AIDataSelection.selectedUnit.aiData.AiName = EditorGUILayout.TextField("AI单位名称",AIDataSelection.selectedUnit.aiData.AiName ,
+                    GUILayout.Width(400));
                 //
             }
         }

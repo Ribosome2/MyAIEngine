@@ -123,7 +123,30 @@ public class AIUnit : AIBase
         {
             ChooseMovementAnimation(deltaPos);
         }
+
+        MakeSureAnimationMatch();
         NotifyAiUpdate(deltaTime);
+    }
+
+    /// <summary>
+    /// 检查确保，Animator在播的动画更当前片断的动画一样，
+    /// 因为用Animator.Play 和CrossFade都有可能切换不到目标状态，所以要不断的检测，坑坑坑！！！！
+    /// </summary>
+    private void MakeSureAnimationMatch()
+    {
+        AnimatorClipInfo[] info = animator.GetCurrentAnimatorClipInfo(0);
+        bool match = false;
+        for (int i = 0; i < info.Length; i++)
+        {
+            if (info[i].clip.name == mCurAIClip.animationName)
+            {
+                match = true;
+            }
+        }
+        if (match == false)
+        {
+            PlayAnimation(mCurAIClip.animationName, 0);
+        }
     }
 
     public void UpdateShape()
@@ -176,10 +199,8 @@ public class AIUnit : AIBase
             Debug.LogError("不能设置空数据");
             return;
         }
-        if (curAnimationName != aiClip.animationName)
+        if (curAnimationName!= aiClip.animationName)
         {
-           
-            Debug.Log("Switcing to " + aiClip.animationName);
             PlayAnimation(aiClip.animationName, fadeTime);
         }
         animator.applyRootMotion = aiClip.applyRootMotion;
@@ -190,11 +211,13 @@ public class AIUnit : AIBase
 
     public virtual void SwitchAIClipByClipKey(string  clipKey,float fadeTime=0.1f)
     {
+        mCurClipTime = 0;
         if (CurAiClip != null && CurAiClip.clipKey == clipKey) //当前已经是在目标片断， 不要重复切换
         {
+           // Debug.Log("double set"+mCurClipTime);
             return;
         }
-        mCurClipTime = 0;
+       
 
         AIClip clip = mAiClipGroup.aiClipList.Find(delegate(AIClip targetClip)
         {
@@ -266,6 +289,7 @@ public class AIUnit : AIBase
         curAnimationName = clipName;
         if (UseMecanimAnimation)
         {
+            Debug.Log("Play "+clipName+ "Time: "+Time.realtimeSinceStartup);
             //用CrossFade方法好像有时切换不到目标片断，好烦，
             animator.Play(clipName);
            // animator.CrossFade(clipName, fadeTime);

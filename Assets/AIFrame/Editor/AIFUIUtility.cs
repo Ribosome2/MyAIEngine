@@ -61,7 +61,7 @@ public class AIFUIUtility {
         GUILayout.EndHorizontal();
     }
 
-    public static string  DrawAiLinkPopup(AIClipGroup clipGroup,  string curSelect,string strTip,int popUpWidth)
+    public static string  DrawAiLinkPopup(AIClipGroup clipGroup,  string curSelect,string strTip,int popUpWidth,int tipWidth=70)
     {
         if (clipGroup == null)
         {
@@ -75,7 +75,7 @@ public class AIFUIUtility {
         }
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label(strTip, GUILayout.Width(70));
+        GUILayout.Label(strTip, GUILayout.Width(tipWidth));
         string[] optionClips = new string[clipGroup.aiClipList.Count];
         for (int i = 0; i < optionClips.Length; i++) //显示的是全名， 但是我们记录的是键值
         {
@@ -371,17 +371,17 @@ public class AIFUIUtility {
 
     public static void DrawAIClip(AIClip clip,AIClipGroup paretGroup)
     {
-        clip.clipKey = AIFUIUtility.DrawTextField(clip.clipKey, "动画片断键值", 100);
-        clip.name = AIFUIUtility.DrawTextField(clip.name, "片断名称", 200);
-        clip.animationName = AIFUIUtility.DrawTextField(clip.animationName, "动画名称", 200);
+        clip.clipKey = EditorGUILayout.TextField( "动画片断键值",clip.clipKey,GUILayout.Width(300));
+        clip.name = EditorGUILayout.TextField("片断名称", clip.name, GUILayout.Width(300));
+        clip.animationName = EditorGUILayout.TextField("动画名称",clip.animationName, GUILayout.Width(300));
         if (paretGroup != null)
         {
-            clip.defaultLinkClip = AIFUIUtility.DrawAiLinkPopup(paretGroup, clip.defaultLinkClip, "  默认连接", 150);
+            clip.defaultLinkClip = AIFUIUtility.DrawAiLinkPopup(paretGroup, clip.defaultLinkClip, "  默认连接", 150,150);
         }
-        clip.animationTime = EditorGUILayout.FloatField("动画时长", clip.animationTime, GUILayout.Width(120), GUILayout.ExpandWidth(true));
-        clip.attackRange = EditorGUILayout.FloatField("攻击范围",clip.attackRange, GUILayout.Width(90));
-        clip.CheckDirectionInput = GUILayout.Toggle(clip.CheckDirectionInput, "方向输入", GUILayout.Width(90));
-        clip.runToTarget = GUILayout.Toggle(clip.runToTarget, "跑向目标", GUILayout.Width(90));
+        clip.animationTime = EditorGUILayout.FloatField("动画时长", clip.animationTime, GUILayout.Width(300));
+        clip.attackRange = EditorGUILayout.FloatField("攻击范围",clip.attackRange, GUILayout.Width(300));
+        clip.CheckDirectionInput = GUILayout.Toggle(clip.CheckDirectionInput, "方向输入（检测到方向输入切换到跑步片断）", GUILayout.Width(250));
+        clip.runToTarget = GUILayout.Toggle(clip.runToTarget, "跑向目标(找到目标的情况向目标移动)", GUILayout.Width(200));
         clip.applyRootMotion = GUILayout.Toggle(clip.applyRootMotion, "使用动画运动", GUILayout.Width(90));
 
     }
