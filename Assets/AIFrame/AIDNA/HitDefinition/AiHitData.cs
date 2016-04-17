@@ -36,6 +36,9 @@ public class HitCheckBase
     public EHitCheckShape shapeType = EHitCheckShape.Capsule;
     public Vector3 posOffset = Vector3.zero;
     public float radius = 1.5f;
+    /// <summary>
+    /// 一般指的是高度，当激光束的时候指的是长度
+    /// </summary>
     public float height = 0.5f;
     /// <summary>
     /// 角度， 一般只有扇形会用到

@@ -47,7 +47,15 @@ public class HitDataEditWnd : EditorWindow {
             hitCheck.shapeType = (EHitCheckShape)AIFUIUtility.DrawCustomEnum("击中框类型", hitCheck.shapeType, 100);
             hitCheck.posOffset = EditorGUILayout.Vector3Field("位置偏移", hitCheck.posOffset);
             hitCheck.radius = EditorGUILayout.FloatField("半径", hitCheck.radius);
-            hitCheck.height = EditorGUILayout.FloatField("高度", hitCheck.height);
+            if (hitCheck.shapeType == EHitCheckShape.LaserBeam)
+            {
+                hitCheck.height = EditorGUILayout.FloatField("激光束长度", hitCheck.height);
+            }
+            else
+            {
+                hitCheck.height = EditorGUILayout.FloatField("高度", hitCheck.height);
+            }
+            
             hitCheck.angle = EditorGUILayout.FloatField("攻击角度", hitCheck.angle);
 
 
@@ -118,6 +126,9 @@ public class HitDataEditWnd : EditorWindow {
             }else if (hitCheck.shapeType == EHitCheckShape.Capsule || hitCheck.shapeType==EHitCheckShape.Cylinder)
             {
                 GizmosExtension.DrawCylinder(pos,normal,debugDummy.transform.forward,hitCheck.radius,hitCheck.height);
+            }else if (hitCheck.shapeType == EHitCheckShape.LaserBeam)
+            {
+                
             }
         }
         

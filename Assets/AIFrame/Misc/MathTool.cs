@@ -5,7 +5,7 @@ public class MathTool {
     public static bool CheckCylinderHit(Vector3 hitPos, float height, float radius, CharacterController controller)
     {
         Bounds targetBound = controller.bounds;
-        if (targetBound.min.y < hitPos.y || targetBound.max.y > hitPos.y + height)
+        if (targetBound.max.y < hitPos.y || targetBound.min.y > hitPos.y + height)
         {  //
             return false;
         }
@@ -14,7 +14,30 @@ public class MathTool {
         float deltaZ = targetBound.center.z - hitPos.z;
 
         Vector3 pos = targetBound.center;
-        pos=new Vector3(pos.x,hitPos.y,pos.x);
+        pos=new Vector3(pos.x,hitPos.y,pos.z);
+        float dist = Vector3.Distance(hitPos, pos);
+        if ( dist> radius + controller.radius)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public static bool CheckCircleHit(Vector3 hitPos,  float radius, CharacterController controller)
+    {
+        Bounds targetBound = controller.bounds;
+        if (targetBound.max.y < hitPos.y-radius || targetBound.min.y > hitPos.y+radius)
+        {  //
+            return false;
+        }
+
+        float deltaX = targetBound.center.x - hitPos.x;
+        float deltaZ = targetBound.center.z - hitPos.z;
+
+        Vector3 pos = targetBound.center;
+        pos = new Vector3(pos.x, hitPos.y, pos.z);
         if (Vector3.Distance(hitPos, pos) > radius + controller.radius)
         {
             return false;

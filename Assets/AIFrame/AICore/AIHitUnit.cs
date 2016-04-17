@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using System.Collections;
 /// <summary>
@@ -76,29 +77,74 @@ public class AIHitUnit
 
     void CheckHit()
     {
-        for (int i = 0; i < AIMgr.instance.listAIs.Count; i++)
+
+        if (mHitData.hitCheckData.shapeType == EHitCheckShape.LaserBeam)
         {
-            AIUnit ai = AIMgr.instance.listAIs[i];
-            //不在攻击频率内的，跳过
-            if (mHitRecord.ContainsKey(ai) && Time.realtimeSinceStartup - mHitRecord[ai] < mHitData.hitInterval)
+            HitCheckBase hitCheck = mHitData.hitCheckData;
+            RaycastHit[] hits=Physics.SphereCastAll(pos, mHitData.hitCheckData.radius, moveDirection, hitCheck.height);
+
+            if (hits != null && hits.Length > 0)
             {
-                continue;
-            }
-            else
-            {
-                if (ai.CheckHit(mOwner,this))//攻击成功，要记录当前攻击时间
+                for (int hitIndex = 0; hitIndex < hits.Length; hitIndex++)
                 {
-                    if (mHitRecord.ContainsKey(ai))
+                    RaycastHit hit = hits[hitIndex];
+                    for (int i = 0; i < AIMgr.instance.listAIs.Count; i++)
                     {
-                        mHitRecord[ai] = Time.realtimeSinceStartup;
-                    }
-                    else
-                    {
-                        mHitRecord.Add(ai,Time.realtimeSinceStartup);
+                        AIUnit ai = AIMgr.instance.listAIs[i];
+                        if (ai.Controller == hit.collider)
+                        {
+                            //不在攻击频率内的，跳过
+                            if (IsCannotHit(ai))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                ai.OnGetHit();
+                                RecordHit(ai);
+                            }
+                        }
                     }
                 }
             }
         }
+        else
+        {
+
+            for (int i = 0; i < AIMgr.instance.listAIs.Count; i++)
+            {
+                AIUnit ai = AIMgr.instance.listAIs[i];
+                //不在攻击频率内的，跳过
+                if (IsCannotHit(ai))
+                {
+                    continue;
+                }
+                else
+                {
+                    if (ai.CheckHit(mOwner, this)) //攻击成功，要记录当前攻击时间
+                    {
+                        RecordHit(ai);
+                    }
+                }
+            }
+        }
+    }
+
+    private void RecordHit(AIUnit ai)
+    {
+        if (mHitRecord.ContainsKey(ai))
+        {
+            mHitRecord[ai] = Time.realtimeSinceStartup;
+        }
+        else
+        {
+            mHitRecord.Add(ai, Time.realtimeSinceStartup);
+        }
+    }
+
+    private bool IsCannotHit(AIUnit ai)
+    {
+        return mHitRecord.ContainsKey(ai) && Time.realtimeSinceStartup - mHitRecord[ai] < mHitData.hitInterval;
     }
 
     void UpdateEntityPosition()
@@ -121,7 +167,7 @@ public class AIHitUnit
             return;
         }
 
-        if (mHitData!=null &&   mOwner==null &&  mOwner.transform!=null)
+        if (mHitData!=null &&   mOwner!=null &&  mOwner.transform!=null)
         {
             HitCheckBase hitCheck = mHitData.hitCheckData;
             Vector3 normal = mOwner.transform.up;
@@ -132,7 +178,10 @@ public class AIHitUnit
                 GizmosExtension.DrawFanShapeWithHeight(pos, normal, startVec, hitCheck.angle,hitCheck.radius,hitCheck.height);
             }else if (hitCheck.shapeType == EHitCheckShape.Cylinder || hitCheck.shapeType == EHitCheckShape.Capsule)
             {
-                GizmosExtension.DrawCylinder(pos,normal,forwardDir,hitCheck.radius,hitCheck.radius);
+                GizmosExtension.DrawCylinder(pos,normal,forwardDir,hitCheck.radius,hitCheck.height);
+            }else if (hitCheck.shapeType == EHitCheckShape.LaserBeam)
+            {
+                GizmosExtension.DrawLaserBeam(pos,  moveDirection, hitCheck.radius, hitCheck.height);
             }
         }
     }

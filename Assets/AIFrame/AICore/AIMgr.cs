@@ -6,6 +6,7 @@ using Object = UnityEngine.Object;
 
 public class AIMgr :Singleton<AIMgr>
 {
+    public static bool DisableAiAttack = false;
     public Action DrawGizmosEvent;
     public List<AIUnit> listAIs = new List<AIUnit>();
 
@@ -93,6 +94,12 @@ public class AIMgr :Singleton<AIMgr>
     /// <returns></returns>
     public AIUnit FindFirstEnemy(AIUnit srcAi)
     {
+#if UNITY_EDITOR
+        if (DisableAiAttack && srcAi.aiCamp == EAiCamp.Enemy)
+        {
+            return null;
+        }
+#endif
         AIUnit enemy = null;
         float distance = float.MaxValue;
         for (int i = 0; i < listAIs.Count; i++)

@@ -118,6 +118,11 @@ public class AIUnit : AIBase
 
         CheckLinkClips();
         Vector3 deltaPos = CalculateMoveDelta(deltaTime);
+        //if (mCurAIClip.applyRootMotion)
+        //{
+        //    deltaPos += animator.deltaPosition;
+        //    transform.rotation *= animator.deltaRotation;
+        //}
         Move(deltaPos);
         if (mCurAIClip.CheckDirectionInput)
         {
@@ -289,10 +294,11 @@ public class AIUnit : AIBase
         curAnimationName = clipName;
         if (UseMecanimAnimation)
         {
-            Debug.Log("Play "+clipName+ "Time: "+Time.realtimeSinceStartup);
+           // Debug.Log("Play "+clipName+ "Time: "+Time.realtimeSinceStartup);
             //用CrossFade方法好像有时切换不到目标片断，好烦，
-            animator.Play(clipName);
-           // animator.CrossFade(clipName, fadeTime);
+           // animator.Play(clipName);
+            //animator.SetTrigger(clipName);
+            animator.CrossFade(clipName, fadeTime);
         }
         else
         {
@@ -427,11 +433,16 @@ public class AIUnit : AIBase
 
         if (isHit)
         {
-            SwitchAIClipByClipKey(mAiClipGroup.commonAnimation.hit);
+            OnGetHit();
         }
 
         return isHit;
 
+    }
+
+    public void OnGetHit()
+    {
+        SwitchAIClipByClipKey(mAiClipGroup.commonAnimation.hit);
     }
 
     /// <summary>

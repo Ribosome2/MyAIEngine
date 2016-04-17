@@ -45,7 +45,7 @@ public class AITestWnd : EditorWindow {
 
         GUILayout.EndHorizontal();
 
-       
+        AIMgr.DisableAiAttack = EditorGUILayout.Toggle("关闭AI攻击", AIMgr.DisableAiAttack);
         createCamp = (EAiCamp) EditorGUILayout.EnumPopup("创建阵营", createCamp);
         createAsAI = EditorGUILayout.Toggle("asAi", createAsAI);
         GUILayout.BeginHorizontal();

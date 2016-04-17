@@ -60,6 +60,14 @@ public class GizmosExtension  {
 
 #endif
     }
-
+    public static void DrawLaserBeam(Vector3 startPoint, Vector3 dir, float radius, float height)
+    {
+#if UNITY_EDITOR
+        Gizmos.DrawWireSphere(startPoint,radius);
+        Vector3 targetPos = startPoint + dir.normalized*height;
+        Gizmos.DrawWireSphere(targetPos,radius);
+        Gizmos.DrawLine(startPoint,targetPos);
+#endif
+    }
 
 }

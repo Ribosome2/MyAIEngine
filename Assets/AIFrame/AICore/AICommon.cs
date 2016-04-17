@@ -26,6 +26,8 @@ public enum EHitCheckShape
     /// 扇形
     /// </summary>
     Fan,
+    Circle,
+    LaserBeam,//类似激光束的攻击定义，可以是任意角度
 
 }
 
